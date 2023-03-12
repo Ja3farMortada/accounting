@@ -1,0 +1,38 @@
+<div class="card border-left-danger danger-hover text-danger" ng-click="openRateModal()">
+    <div class="card-body pt-1 pb-1">
+        <h5 class="mb-0">Sayrafa = {{ sayrafaRate.rate_value.toLocaleString() }} L.L</h5>
+        <h6 class="mb-0">Round: {{ sayrafaRate.round_value == 1 ? 'Off' : sayrafaRate.round_value.toLocaleString() }}</h6>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="sayrafaModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">Update Rate</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form ng-submit="submitRate()">
+                <div class="modal-body">
+                    <label class="form-label">Exchange Rate:</label>
+                    <input id="rateValue" type="text" class="form-control" spellcheck="false"
+                        ng-model="modalData.rate_value" required>
+
+                    <label class="form-label mt-3">Round Value:</label>
+                    <select class="form-select" ng-model="modalData.round_value" required>
+                        <option ng-value="1">Off</option>
+                        <option ng-value="1000">1,000</option>
+                        <option ng-value="5000">5,000</option>
+                        <option ng-value="10000">10,000</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times"></i>
+                        Close</button>
+                    <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
