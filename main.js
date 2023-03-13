@@ -127,7 +127,7 @@ ipcMain.handle('backupDB', () => {
                     host: 'localhost',
                     user: 'root',
                     password: 'roottoor',
-                    database: 'salameh'
+                    database: 'accounting'
                 },
                 dumpToFile: `${data.filePath}`
             }).then(function () {

@@ -1,11 +1,12 @@
-app.controller('stockController', function ($scope, stockFactory, rateFactory, sayrafaFactory) {
+app.controller('stockController', function ($scope, stockFactory, rateFactory, euroFactory) {
 
     // on load controller
     let selectionSubscription;
     let rateSubscription;
-    let sayrafaSubscription;
+    let euroSubscription;
     let categoriesSubscription;
     let itemsSubscription;
+    let lowStockSub;
     let searchSubscription;
     let perPageSub;
     $scope.$on('$viewContentLoaded', () => {
@@ -15,14 +16,17 @@ app.controller('stockController', function ($scope, stockFactory, rateFactory, s
         rateSubscription = rateFactory.exchangeRate.subscribe(res => {
             $scope.exchangeRate = res;
         })
-        sayrafaSubscription = sayrafaFactory.sayrafaRate.subscribe(res => {
-            $scope.sayrafaRate = res;
+        euroSubscription = euroFactory.euroRate.subscribe(res => {
+            $scope.euroRate = res;
         })
         categoriesSubscription = stockFactory.categories.subscribe(res => {
             $scope.categories = res;
         })
         itemsSubscription = stockFactory.items.subscribe(res => {
-            $scope.items = res
+            $scope.items = res;
+        })
+        lowStockSub = stockFactory.lowStockItems.subscribe(res => {
+            $scope.lowStockItems = res;
         })
         searchSubscription = stockFactory.searchVal.subscribe(res => {
             $scope.searchVal = res;
@@ -37,8 +41,10 @@ app.controller('stockController', function ($scope, stockFactory, rateFactory, s
     $scope.$on('$destroy', () => {
         selectionSubscription.unsubscribe();
         rateSubscription.unsubscribe();
+        euroSubscription.unsubscribe();
         categoriesSubscription.unsubscribe();
         itemsSubscription.unsubscribe();
+        lowStockSub.unsubscribe();
         searchSubscription.unsubscribe();
         perPageSub.unsubscribe();
     })
@@ -58,8 +64,8 @@ app.controller('stockController', function ($scope, stockFactory, rateFactory, s
         return Math.ceil(data / $scope.exchangeRate.round_value) * $scope.exchangeRate.round_value;
     }
 
-    $scope.sayrafaRound = data => {
-        return Math.ceil(data / $scope.sayrafaRate.round_value) * $scope.sayrafaRate.round_value;
+    $scope.euroRound = data => {
+        return Math.ceil(data / $scope.euroRate.round_value) * $scope.euroRate.round_value;
     }
 
     // sorting opions
@@ -148,23 +154,25 @@ app.controller('stockController', function ($scope, stockFactory, rateFactory, s
     })
 
     // open itemsModal for add or edit
-    let itemsModalType;
     $scope.openItemsModal = (type, data) => {
         if (type == 'edit') {
-            itemsModalType = 'edit';
+            $scope.itemsModalType = 'edit';
             $scope.itemsModal = {};
             angular.copy(data, $scope.itemsModal);
             itemsModal.show();
         } else {
-            itemsModalType = 'add';
+            $scope.itemsModalType = 'add';
             $scope.itemsModal = {
                 item_description: null,
                 barcode: null,
                 item_type: 'barcode',
                 category_ID_FK: data == 'default' ? null : $scope.selectedCategory.category_ID,
+                cost_type: null,
                 currency: null,
                 qty: null,
+                qty_limit: null,
                 item_cost: null,
+                percentage_cost: null,
                 item_price: null,
                 item_notes: null
             }
@@ -182,24 +190,13 @@ app.controller('stockController', function ($scope, stockFactory, rateFactory, s
 
     // submit itemsModal
     $scope.submitItem = () => {
-        switch (itemsModalType) {
+        switch ($scope.itemsModalType) {
             case 'add':
                 if ($scope.itemsModal.barcode) {
                     stockFactory.checkBarcode($scope.itemsModal.barcode).then(response => {
                         if (response) { //if barcode not existed
                             stockFactory.addItem($scope.itemsModal).then(response => {
                                 if (response) {
-                                    $scope.itemsModal = {
-                                        item_description: null,
-                                        barcode: null,
-                                        item_type: 'barcode',
-                                        category_ID_FK: $scope.selectedCategory.category_ID,
-                                        currency: null,
-                                        qty: null,
-                                        item_cost: null,
-                                        item_price: null,
-                                        item_notes: null
-                                    }
                                     $scope.items.push(response);
                                     itemsModal.hide();
                                 }
@@ -212,17 +209,6 @@ app.controller('stockController', function ($scope, stockFactory, rateFactory, s
                 } else {
                     stockFactory.addItem($scope.itemsModal).then(response => {
                         if (response) {
-                            $scope.itemsModal = {
-                                item_description: null,
-                                barcode: null,
-                                item_type: 'barcode',
-                                category_ID_FK: $scope.selectedCategory.category_ID,
-                                currency: null,
-                                qty: null,
-                                item_cost: null,
-                                item_price: null,
-                                item_notes: null
-                            }
                             $scope.items.push(response)
                             itemsModal.hide();
                         }
@@ -231,9 +217,6 @@ app.controller('stockController', function ($scope, stockFactory, rateFactory, s
                 break;
 
             case 'edit':
-                // if ($scope.itemsModal.item_type != 'barcode') {
-                //     $scope.itemsModal.barcode = null
-                // }
                 stockFactory.updateItem($scope.itemsModal).then(response => {
                     if (response) {
                         let index = $scope.items.findIndex(x => x.item_ID == response.item_ID);
@@ -246,8 +229,18 @@ app.controller('stockController', function ($scope, stockFactory, rateFactory, s
     }
 
     // Delete Item
-    $scope.deleteItem = data => {
-        stockFactory.deleteItem(data);
+    $scope.deleteItem = () => {
+        stockFactory.deleteItem($scope.itemsModal);
+    }
+
+    $scope.barcodeSearch = () => {
+        $('#barcodeSearch').trigger('select');
+        $('#barcodeSearch2').trigger('select');
+    }
+
+    // refresh low on stock
+    $scope.refresh = () => {
+        stockFactory.fetchLowStockItems();
     }
 
 });

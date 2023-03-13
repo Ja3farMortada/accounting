@@ -13,6 +13,20 @@ module.exports = (app, db, upload, fs, path) => {
         }
     })
 
+    // get low on stock
+    app.get('/getLowStockItems', async (req, res) => {
+        let query = `SELECT stock.*, stock_categories.category_name FROM stock
+        INNER JOIN stock_categories ON category_ID_FK = category_ID
+        WHERE item_status = 1
+        AND qty <= qty_limit`;
+        try {
+            let [results] = await db.query(query);
+            res.send(results)
+        } catch (error) {
+            res.status(400).send(error);
+        }
+    })
+
     // check barcode
     app.post('/checkBarcode', async (req, res) => {
         let data = req.body.data;
@@ -27,8 +41,15 @@ module.exports = (app, db, upload, fs, path) => {
 
     // Add item
     app.post('/addItem', async (req, res) => {
-        let data = req.body.data;
+        let data = req.body;
         let query = `INSERT INTO stock SET ?`;
+
+        if (data.cost_type == 'percentage') {
+            data.item_cost = data.item_price - (data.item_price * data.percentage_cost/100);
+        } else {
+            data.percentage_cost = (100 - ((data.item_cost * 100) / data.item_price)).toFixed(2)
+        }
+
         try {
             let [addedItem] = await db.query(query, data);
             let [
@@ -44,8 +65,15 @@ module.exports = (app, db, upload, fs, path) => {
 
     // update without image
     app.post('/updateItem', async (req, res) => {
-        let data = req.body.data;
+        let data = req.body;
         delete data.category_name;
+
+        if (data.cost_type == 'percentage') {
+            data.item_cost = data.item_price - (data.item_price * data.percentage_cost/100);
+        } else {
+            data.percentage_cost = (100 - ((data.item_cost * 100) / data.item_price)).toFixed(2)
+        }
+
         let query = `UPDATE stock SET ? WHERE item_ID = ?`;
         try {
             await db.query(query, [data, data.item_ID]);

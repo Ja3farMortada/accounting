@@ -7,6 +7,7 @@ app.factory('stockFactory', function ($http, NotificationService) {
     var model = {};
     model.categories = new BehaviorSubject([]);
     model.items = new BehaviorSubject([]);
+    model.lowStockItems = new BehaviorSubject([]);
     model.searchVal = new BehaviorSubject({
         category_ID_FK: null
     });
@@ -53,7 +54,7 @@ app.factory('stockFactory', function ($http, NotificationService) {
 
 
     // ##################################### CATEGORIES #######################################
-    
+
     // Get categories
     const getCategories = () => {
         $http.get(`${url}/getCategories`).then(response => {
@@ -133,7 +134,7 @@ app.factory('stockFactory', function ($http, NotificationService) {
 
         }, error => {
             NotificationService.showError(error);
-        } )
+        })
     }
 
 
@@ -149,9 +150,31 @@ app.factory('stockFactory', function ($http, NotificationService) {
     };
     getItems();
 
+    // get low Stock Items
+    const getlowStockItems = () => {
+        $http.get(`${url}/getLowStockItems`).then(response => {
+            model.lowStockItems.next(response.data);
+        }, error => {
+            NotificationService.showError(error);
+        })
+    }
+    getlowStockItems();
+
+    // fetch low stock items
+    model.fetchLowStockItems = async () => {
+        $http.get(`${url}/getLowStockItems`).then(response => {
+            model.lowStockItems.next(response.data);
+        }, error => {
+            NotificationService.showError(error);
+        })
+    }
+
     // check barcode
     model.checkBarcode = data => {
-        return $http.post(`${url}/checkBarcode`, {data, data}).then(response => {
+        return $http.post(`${url}/checkBarcode`, {
+            data,
+            data
+        }).then(response => {
             if (response.data.length > 0) return false;
             return true;
         }, error => {
@@ -161,10 +184,7 @@ app.factory('stockFactory', function ($http, NotificationService) {
 
     // add item
     model.addItem = data => {
-        return $http.post(`${url}/addItem`, {
-            data,
-            data
-        }).then(response => {
+        return $http.post(`${url}/addItem`, data).then(response => {
             NotificationService.showSuccess();
             return response.data;
         }, error => {
@@ -174,9 +194,7 @@ app.factory('stockFactory', function ($http, NotificationService) {
 
     // update item
     model.updateItem = data => {
-        return $http.post(`${url}/updateItem`, {
-            data: data
-        }).then(response => {
+        return $http.post(`${url}/updateItem`, data).then(response => {
             NotificationService.showSuccess();
             return response.data;
         }, error => {
@@ -198,6 +216,7 @@ app.factory('stockFactory', function ($http, NotificationService) {
                         model.items.next(value);
                         NotificationService.showSuccess();
                     }
+                    $('#itemsModal').modal('hide')
                 }, error => {
                     NotificationService.showError(error);
                 })
@@ -205,7 +224,7 @@ app.factory('stockFactory', function ($http, NotificationService) {
         })
     }
 
-    
+
 
     return model;
 })

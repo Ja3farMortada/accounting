@@ -21,8 +21,8 @@ module.exports = (app, db, md5) => {
         }
     });
 
-    app.get('/getSayrafaRate', async (req, res) => {
-        let query = `SELECT rate_value, round_value FROM settings WHERE setting_name = 'sayrafaRate' `;
+    app.get('/getEuroRate', async (req, res) => {
+        let query = `SELECT rate_value, round_value FROM settings WHERE setting_name = 'euroRate' `;
         try {
             let [[results]] = await db.query(query);
             res.send(results)
@@ -31,11 +31,11 @@ module.exports = (app, db, md5) => {
         }
     });
 
-    app.post('/updateSayrafaRate', async (req, res) => {
-        let query = `UPDATE settings SET ? WHERE setting_name = 'sayrafaRate' `;
+    app.post('/updateEuroRate', async (req, res) => {
+        let query = `UPDATE settings SET ? WHERE setting_name = 'euroRate' `;
         try {
             await db.query(query, req.body)
-            let [[results]] = await db.query(`SELECT rate_value, round_value FROM settings WHERE setting_name = 'sayrafaRate'`)
+            let [[results]] = await db.query(`SELECT rate_value, round_value FROM settings WHERE setting_name = 'euroRate'`)
             res.send(results);
         } catch (error) {
             res.status(400).send(error);
