@@ -1,9 +1,9 @@
-app.controller('historyController', function ($scope, historyFactory, rateFactory, sayrafaFactory, DateService, mainFactory) {
+app.controller('historyController', function ($scope, historyFactory, rateFactory, euroFactory, DateService, mainFactory) {
 
 
     let userSubscription;
     let rateSubscription;
-    let sayrafaSubscription;
+    let euroSubscription;
     $scope.$on('$viewContentLoaded', () => {
         userSubscription = mainFactory.loggedInUser.subscribe(res => {
             $scope.loggedInUser = res;
@@ -11,8 +11,8 @@ app.controller('historyController', function ($scope, historyFactory, rateFactor
         rateSubscription = rateFactory.exchangeRate.subscribe(res => {
             $scope.exchangeRate = res;
         })
-        sayrafaSubscription = sayrafaFactory.sayrafaRate.subscribe(res => {
-            $scope.sayrafaRate = res;
+        euroSubscription = euroFactory.euroRate.subscribe(res => {
+            $scope.euroRate = res;
         })
 
         $scope.salesInvoices = historyFactory.salesInvoices;
@@ -22,7 +22,7 @@ app.controller('historyController', function ($scope, historyFactory, rateFactor
     $scope.$on('$destroy', () => {
         userSubscription.unsubscribe();
         rateSubscription.unsubscribe();
-        sayrafaSubscription.unsubscribe();
+        euroSubscription.unsubscribe();
     })
 
 

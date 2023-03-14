@@ -1,25 +1,62 @@
 <div class="container-fluid">
     <div class="row g-1">
-        <!-- invoice section -->
-        <div class="col-7">
+        <!-- opened invoices section -->
+        <div class="col-4">
+            <div class="card mt-2">
+                <div class="card-header">
+                    test
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-sm table-hover text-center table-striped">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="data in incompleteInvoice" ng-click="selectInvoice(data)"
+                                ng-class="{'table-success': selectedInvoice.invoice_ID == data.invoice_ID}">
+                                <td>{{ data.invoice_ID }}</td>
+                                <td>{{ data.customer_name }}</td>
+                                <td>{{ data.total_price.toLocaleString() }} L.L</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-secondary" ng-click="clearSelection()">Clear Selection</button>
+                </div>
+            </div>
+        </div>
 
+
+        <!-- invoice section -->
+        <div class="col-8">
             <!-- invoice table -->
             <div class="card mt-2">
                 <div class="card-header">
                     <div class="row d-flex justify-content-between align-items-center">
+                        <!-- hold invoice Button or customer name  -->
                         <div class="col-auto">
-                            <!-- Clear Button -->
-
-                            <button ng-show="!selectedTab && invoice.length > 0" class="btn btn-warning"
+                            <button ng-show="!selectedTab && invoice.length > 0 && !editMode" class="btn btn-warning"
                                 ng-click="holdInvoice()"><i class="fas fa-pause"></i> Hold Invoice</button>
+
+                            <h4 ng-show="editMode">{{ selectedInvoice.customer_name }}</h4>
                         </div>
+
+                        <!-- total price -->
                         <div class="col-auto">
-                            <h3 class="text-end text-primary">Total: {{ totalPrice.toLocaleString() }} L.L</h3>
+                            <h4 class="text-end text-primary m-0">
+                                Total: {{ totalPrice.toLocaleString() }}$
+                            </h4>
+                            <span>Total: {{ round(totalPrice * exchangeRate.rate_value).toLocaleString() }} L.L</span>
                         </div>
                     </div>
                 </div>
                 <div class="card-body p-0">
-                    <table class="table table-borderlesss table-striped text-center table-sms m-0">
+                    <table class="table table-striped text-center m-0">
                         <thead>
                             <tr>
                                 <th width="15%">Barcode</th>
@@ -36,26 +73,20 @@
                                 <td class="p-1">{{ data.item_description }}</td>
 
                                 <!-- unit price lira -->
-                                <td class="p-1">{{ data.unit_price.toLocaleString() }}
-                                    <span class="text-danger"
-                                        ng-if="data.currency == 'sayrafa'">({{ data.original_price.toLocaleString() }}$)
-                                    </span>
-                                    <span class="text-success"
-                                        ng-if="data.currency == 'dollar'">({{ data.original_price.toLocaleString() }}$)
-                                    </span>
+                                <td class="p-1">{{ round(data.unit_price * exchangeRate.rate_value).toLocaleString() }}
+                                    L.L
+                                    <span class="text-success">({{ data.unit_price.toLocaleString() }}$)</span>
                                 </td>
 
                                 <!-- qty input -->
                                 <td class="p-1">{{ data.qty }}</td>
 
                                 <!-- total -->
-                                <td class="p-1">{{ (data.unit_price * data.qty).toLocaleString() }}
-                                    <span class="text-danger"
-                                        ng-if="data.currency == 'sayrafa'">({{ (data.original_price * data.qty).toLocaleString() }}$)
-                                    </span>
-                                    <span class="text-success"
-                                        ng-if="data.currency == 'dollar'">({{ (data.original_price * data.qty).toLocaleString() }}$)
-                                    </span>
+                                <td class="p-1">
+                                    {{ round((data.unit_price * data.qty) * exchangeRate.rate_value).toLocaleString() }}
+                                    L.L
+                                    <span
+                                        class="text-success">({{ (data.unit_price * data.qty).toLocaleString() }}$)</span>
                                 </td>
 
                                 <!-- edit price on the go -->
@@ -107,7 +138,7 @@
                     </table>
                     <div class="card-footer" ng-show="invoice.length > 0">
                         <!-- checkout buttons -->
-                        <div class="row">
+                        <div class="row" ng-if="!editMode">
                             <div class="col-auto">
                                 <button ng-show="invoice.length > 0" class="btn btn-success" ng-click="checkout()"><i
                                         class="fas fa-cart-arrow-down"></i>
@@ -121,6 +152,14 @@
                                     Add as Debt</button>
                                 <button class="btn btn-primary" ng-click="openCustomerModal('normal')"><i
                                         class="fas fa-user-tag"></i> Register to Customer</button>
+                            </div>
+                        </div>
+
+                        <div class="row" ng-if="editMode">
+                            <div class="col-auto">
+                                <button class="btn btn-success" ng-click="confirmEdit()"><i class="fas fa-check"></i>
+                                    Confirm Edit</button>
+                                <button class="btn btn-secondary"><i class="fas fa-times"></i> Cancel Edit</button>
                             </div>
                         </div>
 
@@ -147,7 +186,7 @@
         </div>
 
         <!-- Categories and Items -->
-        <div class="col-5">
+        <!-- <div class="col-5">
             <div class="card mt-2">
                 <div class="card-header">
                     <h5 class="text-center">Categories</h5>
@@ -163,7 +202,6 @@
                     </div>
                 </div>
                 <hr class="m-0">
-                <!-- ################# Items section ####################### -->
                 <div class="card-body pt-1">
                     <h5 class="text-center m-0">{{ selectedCategory.category_name }}</h5>
                     <div class="row">
@@ -172,18 +210,15 @@
                             <div class="card pointer dark-hover" ng-mousedown="mouseEvent($event, data)">
                                 <div class="card-body p-1 h6 m-0">{{ data.item_description }}</div>
                                 <div class="card-footer p-1 h6 m-0">
-                                    <!-- lira -->
                                     <span ng-if="data.currency == 'lira'">{{ data.item_price.toLocaleString() }}
                                         L.L
                                         (LBP)
                                     </span>
-                                    <!-- sayrafa -->
                                     <span
-                                        ng-if="data.currency == 'sayrafa'">{{ sayrafaRound(data.item_price * sayrafaRate.rate_value).toLocaleString() }}
+                                        ng-if="data.currency == 'euro'">{{ round(euroRound(data.item_price * euroRate.rate_value) * exchangeRate.rate_value).toLocaleString() }}
                                         L.L
-                                        <span class="text-danger">({{ data.item_price.toLocaleString() }}$)</span>
+                                        <span class="text-danger">({{ data.item_price.toLocaleString() }}€)</span>
                                     </span>
-                                    <!-- dollar -->
                                     <span
                                         ng-if="data.currency == 'dollar'">{{ round(data.item_price * exchangeRate.rate_value).toLocaleString() }}
                                         L.L
@@ -195,7 +230,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
 
     </div>
 
@@ -219,7 +254,7 @@
                             <br>
                             <label>{{ dataToEdit.unit_price.toLocaleString() }}
                                 <span class="text-danger"
-                                    ng-if="dataToEdit.currency == 'sayrafa'">({{ dataToEdit.original_price.toLocaleString() }}$)
+                                    ng-if="dataToEdit.currency == 'euro'">({{ dataToEdit.original_price.toLocaleString() }}$)
                                 </span>
                                 <span class="text-success"
                                     ng-if="dataToEdit.currency == 'dollar'">({{ dataToEdit.original_price.toLocaleString() }}$)
@@ -277,15 +312,15 @@
                         </option>
                     </select>
 
-                    
+
                     <!-- send whatsapp option -->
-                    <div class="mt-3 d-flex justify-content-center">
+                    <!-- <div class="mt-3 d-flex justify-content-center">
                         <div class="form-check form-switch">
                             <input class="form-check-input" type="checkbox" role="switch" id="sendMessage"
                                 ng-model="sendMessage" value="sendMessage">
                             <label class="form-check-label" for="sendMessage">Send Invoice on Whatsapp ?</label>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times"></i>

@@ -6,7 +6,7 @@ module.exports = (app, db) => {
         M.record_ID, DATE(M.record_datetime) AS date,
         TIME(M.record_datetime) AS time,
         M.record_type, M.qty, M.currency,
-        M.exchange_rate, M.sayrafa_rate,
+        M.exchange_rate, M.euro_rate,
         M.unit_cost, M.original_price, M.unit_price AS value, S.item_description AS item_description
         FROM invoice_map M
         INNER JOIN stock S ON item_ID = item_ID_FK
@@ -18,7 +18,7 @@ module.exports = (app, db) => {
         P.payment_ID, DATE(P.payment_datetime),
         TIME(P.payment_datetime),
         P.payment_account, 1, P.payment_currency,
-        P.exchange_rate, P.sayrafa_rate,
+        P.exchange_rate, P.euro_rate,
         P.payment_value, P.actual_payment_value, null, null
         FROM customers_payments P
         WHERE customer_ID_FK = ?
@@ -54,8 +54,8 @@ module.exports = (app, db) => {
                 case 'dollar':
                     query2 = `UPDATE customers SET dollar_debt = ( dollar_debt - ${payment_value} ) WHERE customer_ID = ?`;
                     break;
-                case 'sayrafa':
-                    query2 = `UPDATE customers SET sayrafa_debt = ( sayrafa_debt - ${payment_value} ) WHERE customer_ID = ?`;
+                case 'euro':
+                    query2 = `UPDATE customers SET euro_debt = ( euro_debt - ${payment_value} ) WHERE customer_ID = ?`;
                     break;
             }
             await connection.query(query2, customer_ID);

@@ -1,4 +1,4 @@
-app.controller('sellController', function ($scope, sellFactory, stockFactory, rateFactory, sayrafaFactory, customersFactory, NotificationService) {
+app.controller('sellController', function ($scope, sellFactory, stockFactory, rateFactory, euroFactory, customersFactory, NotificationService) {
 
     // define and trigger focus on barcode input
     $scope.triggerFocus = () => {
@@ -8,8 +8,9 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, ra
 
     // on load controller 
     let rateSubscription;
-    let sayrafaSubscription;
+    let euroSubscription;
     let invoiceSubscribtion;
+    let incompleteInvoiceSub;
     let onHoldSubscribtion;
     let tabSubscribtion;
     let categoriesSubscription;
@@ -21,14 +22,18 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, ra
             $scope.exchangeRate = res;
             calculateTotal()
         })
-        sayrafaSubscription = sayrafaFactory.sayrafaRate.subscribe(res => {
-            $scope.sayrafaRate = res;
+        euroSubscription = euroFactory.euroRate.subscribe(res => {
+            $scope.euroRate = res;
             calculateTotal()
         })
 
         invoiceSubscribtion = sellFactory.invoice.subscribe(res => {
             $scope.invoice = res;
         });
+
+        incompleteInvoiceSub = sellFactory.incompleteInvoice.subscribe(res => {
+            $scope.incompleteInvoice = res;
+        })
 
         onHoldSubscribtion = sellFactory.invoicesOnHold.subscribe(res => {
             $scope.invoicesOnHold = res;
@@ -61,8 +66,9 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, ra
             console.log(e);
         })
         rateSubscription.unsubscribe();
-        sayrafaSubscription.unsubscribe();
+        euroSubscription.unsubscribe();
         invoiceSubscribtion.unsubscribe();
+        incompleteInvoiceSub.unsubscribe();
         onHoldSubscribtion.unsubscribe();
         tabSubscribtion.unsubscribe();
         categoriesSubscription.unsubscribe();
@@ -82,8 +88,8 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, ra
     $scope.round = data => {
         return Math.ceil(data / $scope.exchangeRate.round_value) * $scope.exchangeRate.round_value;
     }
-    $scope.sayrafaRound = data => {
-        return Math.ceil(data / $scope.sayrafaRate.round_value) * $scope.sayrafaRate.round_value;
+    $scope.euroRound = data => {
+        return Math.ceil(data / $scope.euroRate.round_value) * $scope.euroRate.round_value;
     }
 
     // watch for invoice changes and calculate invoice's total cost and price
@@ -99,85 +105,47 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, ra
         $scope.triggerFocus();
     }, true);
 
+    // watch for edit mode
+    $scope.$watch('selectedInvoice', () => {
+        if ($scope.selectedInvoice) {
+            $scope.editMode = true;
+        } else {
+            $scope.editMode = false;
+        }
+    })
+
 
     // define itemToAdd Variable
     let itemToAdd;
     let unitPrice;
-    $scope.mouseEvent = (event, data) => {
-        event.preventDefault()
-        switch (event.which) {
-            // left click mouse
-            case 1:
-                switch (data.currency) {
-                    case 'sayrafa':
-                        unitPrice = $scope.sayrafaRound(data.item_price * $scope.sayrafaRate.rate_value)
-                        break;
-                    case 'dollar':
-                        unitPrice = $scope.round(data.item_price * $scope.exchangeRate.rate_value);
-                        break;
-                    case 'lira':
-                        unitPrice = data.item_price;
-                        break;
-
-                }
-                itemToAdd = {
-                    item_ID: data.item_ID,
-                    barcode: data.barcode,
-                    item_description: data.item_description,
-                    currency: data.currency,
-                    exchange_rate: $scope.exchangeRate.rate_value,
-                    sayrafa_rate: $scope.sayrafaRate.rate_value,
-                    unit_cost: data.item_cost,
-                    original_price: data.item_price,
-                    unit_price: unitPrice,
-                    qty: 1
-                }
-                let found = false;
-                for (let i = 0; i < $scope.invoice.length; i++) {
-                    if ($scope.invoice[i].item_ID == itemToAdd.item_ID) {
-                        $scope.invoice[i].qty += 1;
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) {
-                    $scope.invoice.push(itemToAdd)
-                }
-                break;
-
-                // right click mouse
-            case 3:
-                console.log(data);
-        }
-    }
-
+    let unitCost;
     // scan barcode logic
     $scope.submitBarcode = () => {
         if ($scope.barcodeInput) {
             // if ($scope.barcodeInput.toString().length > 10) {
-            sellFactory.submitBarcode($scope.barcodeInput).then(response => {
-                if (response) {
-                    switch (response.currency) {
-                        case 'sayrafa':
-                            unitPrice = $scope.sayrafaRound(response.item_price * $scope.sayrafaRate.rate_value)
+            sellFactory.submitBarcode($scope.barcodeInput).then(data => {
+                if (data) {
+                    switch (data.currency) {
+                        case 'euro':
+                            unitCost = $scope.euroRound(data.item_cost * $scope.euroRate.rate_value)
+                            unitPrice = $scope.euroRound(data.item_price * $scope.euroRate.rate_value)
                             break;
                         case 'dollar':
-                            unitPrice = $scope.round(response.item_price * $scope.exchangeRate.rate_value);
-                            break;
-                        case 'lira':
-                            unitPrice = response.item_price;
+                            unitCost = data.item_cost;
+                            unitPrice = data.item_price;
                             break;
 
                     }
                     itemToAdd = {
-                        item_ID: response.item_ID,
-                        barcode: response.barcode,
-                        item_description: response.item_description,
-                        currency: response.currency,
+                        item_ID: data.item_ID,
+                        barcode: data.barcode,
+                        item_description: data.item_description,
+                        currency: data.currency,
                         exchange_rate: $scope.exchangeRate.rate_value,
-                        sayrafa_rate: $scope.sayrafaRate.rate_value,
-                        unit_cost: response.item_cost,
-                        original_price: response.item_price,
+                        euro_rate: $scope.euroRate.rate_value,
+                        original_cost: data.item_cost,
+                        original_price: data.item_price,
+                        unit_cost: unitCost,
                         unit_price: unitPrice,
                         qty: 1
                     }
@@ -201,39 +169,40 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, ra
             })
 
             // else if barcode field is empty, thus checkout
-        } else {
-            // checkout
-            $scope.checkout();
-        }
+        } 
+        // else {
+        //     // checkout
+        //     $scope.checkout();
+        // }
     }
 
     // submit name from datalist
     $scope.submitName = () => {
         let foundInItems = false;
-        $scope.items.forEach(element => {
-            if (element.item_description == $scope.inputName) {
-                switch (element.currency) {
-                    case 'sayrafa':
-                        unitPrice = $scope.sayrafaRound(element.item_price * $scope.sayrafaRate.rate_value)
+        $scope.items.forEach(data => {
+            if (data.item_description == $scope.inputName) {
+                switch (data.currency) {
+                    case 'euro':
+                        unitPrice = $scope.round($scope.euroRound(data.item_price * $scope.euroRate.rate_value) * $scope.exchangeRate.rate_value)
                         break;
                     case 'dollar':
-                        unitPrice = $scope.round(element.item_price * $scope.exchangeRate.rate_value);
+                        unitPrice = $scope.round(data.item_price * $scope.exchangeRate.rate_value);
                         break;
                     case 'lira':
-                        unitPrice = element.item_price;
+                        unitPrice = data.item_price;
                         break;
 
                 }
                 itemToAdd = {
-                    item_ID: element.item_ID,
-                    barcode: element.barcode,
-                    item_description: element.item_description,
-                    currency: element.currency,
+                    item_ID: data.item_ID,
+                    barcode: data.barcode,
+                    item_description: data.item_description,
+                    currency: data.currency,
                     exchange_rate: $scope.exchangeRate.rate_value,
-                    sayrafa_rate: $scope.sayrafaRate.rate_value,
-                    unit_cost: element.item_cost,
+                    euro_rate: $scope.euroRate.rate_value,
+                    unit_cost: data.item_cost,
                     unit_price: unitPrice,
-                    original_price: element.item_price,
+                    original_price: data.item_price,
                     qty: 1
                 }
                 let found = false;
@@ -272,6 +241,59 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, ra
                             $scope.$digest(sellFactory.clearInvoice());
                         }
                         $scope.$digest(sellFactory.clearInvoice());
+                    }
+                }
+            })
+        }
+    }
+
+    // checkout customer
+    const customersModal = new bootstrap.Modal('#customerModal');
+    const select_box = document.querySelector('#customer_select');
+    let customerModalType;
+    $scope.openCustomerModal = type => {
+        customerModalType = type;
+        $scope.selectedCustomer = null;
+        $scope.sendMessage = false;
+        if ($scope.invoice.length > 0) {
+            customersModal.show();
+            $('#customerModal').on('shown.bs.modal', () => {
+                // use dselect library to enable live search within select
+                dselect(select_box, {
+                    search: true,
+                    clearable: true
+                })
+            })
+        } else {
+            $scope.triggerFocus()
+        }
+    }
+
+    $scope.submitCustomerModal = () => {
+        if ($scope.selectedCustomer) {
+            NotificationService.showWarning().then(async res => {
+                if (res.isConfirmed) {
+                    if (customerModalType == 'debt') {
+                        // checkout invoice as debt if customer was selected
+                        await sellFactory.checkoutDebt($scope.selectedCustomer, $scope.invoice, $scope.sendMessage);
+                        customersModal.hide();
+                        if ($scope.selectedTab) {
+                            $scope.$digest($scope.invoicesOnHold.splice(($scope.selectedTab - 1), 1));
+                            $scope.$digest(sellFactory.clearInvoice());
+                        }
+                        $scope.$digest(sellFactory.clearInvoice());
+                        $scope.triggerFocus();
+
+                    } else if (customerModalType == 'normal') {
+                        // checkout invoice as normal but assign to a customer for reference only
+                        await sellFactory.checkoutCustomer($scope.selectedCustomer, $scope.invoice)
+                        customersModal.hide();
+                        if ($scope.selectedTab) {
+                            $scope.$digest($scope.invoicesOnHold.splice(($scope.selectedTab - 1), 1));
+                            $scope.$digest(sellFactory.clearInvoice());
+                        }
+                        $scope.$digest(sellFactory.clearInvoice());
+                        $scope.triggerFocus();
                     }
                 }
             })
@@ -325,7 +347,33 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, ra
         })
     }
 
-    // open edit price modal
+    $scope.selectInvoice = data => {
+        $scope.selectedInvoice = data;
+        // $scope.editMode = true;
+        let dataToPush = [];
+        angular.copy(data, dataToPush)
+        sellFactory.invoice.next(dataToPush.invoice_map)
+    }
+
+    $scope.clearSelection = () => {
+        $scope.selectedInvoice = null;
+        sellFactory.clearInvoice();
+    }
+
+    // confirm edit invoice
+    $scope.confirmEdit = () => {
+        console.log($scope.selectedInvoice);
+        console.log($scope.invoice);
+        // console.log($scope.invoice[0]);
+        // console.log($scope.invoice[1]);
+    }
+
+
+
+
+
+    // ***************************** open edit price modal *********************************************
+
     // priceModal
     const priceModal = new bootstrap.Modal('#priceModal');
     $('#priceModal').on('shown.bs.modal', () => {
@@ -354,63 +402,9 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, ra
             data['unit_price'] = $scope.priceModalData.newPrice;
         } else {
             data['original_price'] = $scope.priceModalData.newPrice;
-            data['unit_price'] = data['currency'] == 'dollar' ? $scope.round(data.original_price * $scope.exchangeRate.rate_value) : $scope.sayrafaRound(data.original_price * $scope.sayrafaRate.rate_value);
+            data['unit_price'] = data['currency'] == 'dollar' ? $scope.round(data.original_price * $scope.exchangeRate.rate_value) : $scope.euroRound(data.original_price * $scope.euroRate.rate_value);
         }
         priceModal.hide();
-    }
-
-    // submit customer in invoice
-    // open modal to choose customer
-    const customersModal = new bootstrap.Modal('#customerModal');
-    const select_box = document.querySelector('#customer_select');
-    let customerModalType;
-    $scope.openCustomerModal = type => {
-        customerModalType = type;
-        $scope.selectedCustomer = null;
-        $scope.sendMessage = true;
-        if ($scope.invoice.length > 0) {
-            customersModal.show();
-            $('#customerModal').on('shown.bs.modal', () => {
-                // use dselect library to enable live search within select
-                dselect(select_box, {
-                    search: true,
-                    clearable: true
-                })
-            })
-        } else {
-            $scope.triggerFocus()
-        }
-    }
-
-    $scope.submitCustomerModal = () => {
-        if ($scope.selectedCustomer) {
-            NotificationService.showWarning().then(async res => {
-                if (res.isConfirmed) {
-                    if (customerModalType == 'debt') {
-                        // checkout invoice as debt if customer was selected
-                        await sellFactory.checkoutDebt($scope.selectedCustomer, $scope.invoice, $scope.sendMessage);
-                        customersModal.hide();
-                        if ($scope.selectedTab) {
-                            $scope.$digest($scope.invoicesOnHold.splice(($scope.selectedTab - 1), 1));
-                            $scope.$digest(sellFactory.clearInvoice());
-                        }
-                        $scope.$digest(sellFactory.clearInvoice());
-                        $scope.triggerFocus();
-
-                    } else if (customerModalType == 'normal') {
-                        // checkout invoice as normal but assign to a customer for reference only
-                        await sellFactory.checkoutCustomer($scope.selectedCustomer, $scope.invoice)
-                        customersModal.hide();
-                        if ($scope.selectedTab) {
-                            $scope.$digest($scope.invoicesOnHold.splice(($scope.selectedTab - 1), 1));
-                            $scope.$digest(sellFactory.clearInvoice());
-                        }
-                        $scope.$digest(sellFactory.clearInvoice());
-                        $scope.triggerFocus();
-                    }
-                }
-            })
-        }
     }
 
 });

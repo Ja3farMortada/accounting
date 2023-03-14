@@ -1,13 +1,13 @@
-app.controller('debtsController', function ($scope, debtsFactory, customersFactory, rateFactory, sayrafaFactory) {
+app.controller('debtsController', function ($scope, debtsFactory, customersFactory, rateFactory, euroFactory) {
 
     let rateSubscription;
-    let sayrafaSubscription;
+    let euroSubscription;
     $scope.$on('$viewContentLoaded', () => {
         rateSubscription = rateFactory.exchangeRate.subscribe(res => {
             $scope.exchangeRate = res;
         })
-        sayrafaSubscription = sayrafaFactory.sayrafaRate.subscribe(res => {
-            $scope.sayrafaRate = res;
+        euroSubscription = euroFactory.euroRate.subscribe(res => {
+            $scope.euroRate = res;
         })
 
         $scope.customers = customersFactory.customers;
@@ -21,7 +21,7 @@ app.controller('debtsController', function ($scope, debtsFactory, customersFacto
     // on destroy controller
     $scope.$on('$destroy', () => {
         rateSubscription.unsubscribe();
-        sayrafaSubscription.unsubscribe();
+        euroSubscription.unsubscribe();
     })
 
 
@@ -65,7 +65,7 @@ app.controller('debtsController', function ($scope, debtsFactory, customersFacto
                 actual_payment_value: null,
                 payment_notes: null,
                 exchange_rate: $scope.exchangeRate.rate_value,
-                sayrafa_rate: $scope.sayrafaRate.rate_value
+                euro_rate: $scope.euroRate.rate_value
             }
             paymentModal.show();
         } else {
@@ -94,7 +94,7 @@ app.controller('debtsController', function ($scope, debtsFactory, customersFacto
     $scope.sendWhatsapp = () => {
         let data = $scope.selectedCustomer;
         let nl = `%0A`;
-        let text = `Dear Customer${nl}Please settle your debts${nl}Your current balance is:${nl}- Fresh USD: ${data.dollar_debt.toLocaleString()}$${nl}- Sayrafa: ${data.sayrafa_debt.toLocaleString()}$${nl}- LBP: ${data.lira_debt.toLocaleString()} L.L${nl}Salameh Cell`
+        let text = `Dear Customer${nl}Please settle your debts${nl}Your current balance is:${nl}- Fresh USD: ${data.dollar_debt.toLocaleString()}$${nl}- euro: ${data.euro_debt.toLocaleString()}$${nl}- LBP: ${data.lira_debt.toLocaleString()} L.L${nl}Salameh Cell`
         window.electron.send('send-whatsapp', [data.customer_phone, text])
     }
 })

@@ -1,4 +1,4 @@
-app.factory('sellFactory', function ($http, NotificationService, rateFactory, sayrafaFactory, mainFactory, customersFactory, debtsFactory) {
+app.factory('sellFactory', function ($http, NotificationService, rateFactory, euroFactory, mainFactory, customersFactory, debtsFactory) {
 
     // define URL
     const url = `http://localhost:3000`;
@@ -8,6 +8,7 @@ app.factory('sellFactory', function ($http, NotificationService, rateFactory, sa
         category_name: 'No Category Selected!'
     });
     model.invoice = new BehaviorSubject([]);
+    model.incompleteInvoice = new BehaviorSubject([]);
     model.invoicesOnHold = new BehaviorSubject([]);
     model.selectedTab = new BehaviorSubject();
     model.searchVal = new BehaviorSubject({
@@ -16,8 +17,8 @@ app.factory('sellFactory', function ($http, NotificationService, rateFactory, sa
     rateFactory.exchangeRate.subscribe(res => {
         model.exchangeRate = res;
     });
-    sayrafaFactory.sayrafaRate.subscribe(res => {
-        model.sayrafaRate = res;
+    euroFactory.euroRate.subscribe(res => {
+        model.euroRate = res;
     })
     mainFactory.loggedInUser.subscribe(res => {
         model.loggedInUser = res;
@@ -26,7 +27,7 @@ app.factory('sellFactory', function ($http, NotificationService, rateFactory, sa
 
     // calculate total
     model.total = function () {
-        let invoice
+        let invoice;
         this.invoice.subscribe(res => {
             invoice = res;
         })
@@ -40,6 +41,24 @@ app.factory('sellFactory', function ($http, NotificationService, rateFactory, sa
             totalPrice: 0
         });
     };
+
+    const getIncompleteInvoice = () => {
+        $http.get(`${url}/getIncompleteInvoices`).then(response => {
+            model.incompleteInvoice.next(response.data);
+        }, error => {
+            NotificationService.showError(error);
+        })
+    }
+    getIncompleteInvoice();
+
+    // get incompleted invoices
+    model.fetchIncompleteInvoice = () => {
+        $http.get(`${url}/getIncompleteInvoices`).then(response => {
+            model.incompleteInvoice.next(response.data);
+        }, error => {
+            NotificationService.showError(error);
+        })
+    }
 
     // get item with barcode
     model.submitBarcode = barcode => {
@@ -60,9 +79,8 @@ app.factory('sellFactory', function ($http, NotificationService, rateFactory, sa
             total_cost: model.total().totalCost,
             total_price: model.total().totalPrice,
             exchange_rate: model.exchangeRate.rate_value,
-            sayrafa_rate: model.sayrafaRate.rate_value
+            euro_rate: model.euroRate.rate_value
         }
-        console.log(invoice);
         return $http.post(`${url}/checkout`, {
             items: data,
             invoice: invoice
@@ -78,12 +96,12 @@ app.factory('sellFactory', function ($http, NotificationService, rateFactory, sa
     model.checkoutDebt = (id, data, msg) => {
         let invoice = {
             user_ID_FK: model.loggedInUser.user_ID,
-            customer_ID_FK: id,
+            customer_ID_FK: parseInt(id),
             invoice_type: 'Debt',
             total_cost: model.total().totalCost,
             total_price: model.total().totalPrice,
             exchange_rate: model.exchangeRate.rate_value,
-            sayrafa_rate: model.sayrafaRate.rate_value
+            euro_rate: model.euroRate.rate_value
         }
         return $http.post(`${url}/checkoutDebt`, {
             items: data,
@@ -100,9 +118,9 @@ app.factory('sellFactory', function ($http, NotificationService, rateFactory, sa
                 let nl = `%0A`;
                 let itemsText = ``;
                 data.forEach(element => {
-                    itemsText += `- ${element.qty} * ${element.item_description} of total ${(element.qty * element.original_price).toLocaleString()}${element.currency == 'lira' ? 'L.L' : '$'} ${element.currency == 'sayrafa' ? 'on Sayrafa Rate' : ''} ${nl}`
+                    itemsText += `- ${element.qty} * ${element.item_description} of total ${(element.qty * element.original_price).toLocaleString()}${element.currency == 'lira' ? 'L.L' : '$'} ${element.currency == 'euro' ? 'on euro Rate' : ''} ${nl}`
                 });
-                let text = `New Invoice %23:${response.data}${nl}${itemsText}Your latest balance is:${nl}- Fresh USD: ${customer.dollar_debt.toLocaleString()}$${nl}- Sayrafa: ${customer.sayrafa_debt.toLocaleString()}$${nl}- LBP: ${customer.lira_debt.toLocaleString()} L.L${nl}Salameh Cell`;
+                let text = `New Invoice %23:${response.data}${nl}${itemsText}Your latest balance is:${nl}- Fresh USD: ${customer.dollar_debt.toLocaleString()}$${nl}- euro: ${customer.euro_debt.toLocaleString()}$${nl}- LBP: ${customer.lira_debt.toLocaleString()} L.L${nl}Salameh Cell`;
                 window.electron.send('send-whatsapp', [customer.customer_phone, text]);
             }
         }, error => {
@@ -119,7 +137,7 @@ app.factory('sellFactory', function ($http, NotificationService, rateFactory, sa
             total_cost: model.total().totalCost,
             total_price: model.total().totalPrice,
             exchange_rate: model.exchangeRate.setting_value,
-            sayrafa_rate: model.sayrafaRate.rate_value
+            euro_rate: model.euroRate.rate_value
         }
         return $http.post(`${url}/checkoutCustomer`, {
             items: data,
@@ -131,7 +149,6 @@ app.factory('sellFactory', function ($http, NotificationService, rateFactory, sa
             customersFactory.fetchCustomers();
             return response;
         }, error => {
-            console.log(error);
             NotificationService.showError(error);
         })
     }
