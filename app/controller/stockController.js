@@ -150,6 +150,7 @@ app.controller('stockController', function ($scope, stockFactory, rateFactory, e
     // define itemsModal
     const itemsModal = new bootstrap.Modal('#itemsModal');
     $('#itemsModal').on('shown.bs.modal', () => {
+        $scope.submitItemLoading = false;
         $('#itemName').trigger('focus');
     })
 
@@ -190,10 +191,12 @@ app.controller('stockController', function ($scope, stockFactory, rateFactory, e
 
     // submit itemsModal
     $scope.submitItem = () => {
+        $scope.submitItemLoading  = true;
         switch ($scope.itemsModalType) {
             case 'add':
                 if ($scope.itemsModal.barcode) {
                     stockFactory.checkBarcode($scope.itemsModal.barcode).then(response => {
+                        $scope.submitItemLoading  = false;
                         if (response) { //if barcode not existed
                             stockFactory.addItem($scope.itemsModal).then(response => {
                                 if (response) {
@@ -208,6 +211,7 @@ app.controller('stockController', function ($scope, stockFactory, rateFactory, e
                     })
                 } else {
                     stockFactory.addItem($scope.itemsModal).then(response => {
+                        $scope.submitItemLoading  = false;
                         if (response) {
                             $scope.items.push(response)
                             itemsModal.hide();
@@ -218,6 +222,7 @@ app.controller('stockController', function ($scope, stockFactory, rateFactory, e
 
             case 'edit':
                 stockFactory.updateItem($scope.itemsModal).then(response => {
+                    $scope.submitItemLoading  = false;
                     if (response) {
                         let index = $scope.items.findIndex(x => x.item_ID == response.item_ID);
                         $scope.items[index] = response;

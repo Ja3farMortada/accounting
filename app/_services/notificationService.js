@@ -48,7 +48,7 @@ app.service('NotificationService', ['$timeout', function ($timeout) {
             showCancelButton: true,
             focusConfirm: false,
             reverseButtons: true,
-            // returnFocus: false
+            returnFocus: false
         });
     };
 

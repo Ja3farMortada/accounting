@@ -80,7 +80,7 @@
                                     <option value="">All</option>
                                     <option value="dollar">Dollar</option>
                                     <option value="euro">euro</option>
-                                    <option value="lira">Lira</option>
+                                    <!-- <option value="lira">Lira</option> -->
                                 </select>
                             </th>
                             <th colspan="6"></th>
@@ -109,29 +109,29 @@
                             <td>{{ data.percentage_cost }}%</td>
 
                             <!-- lira -->
-                            <td ng-if="data.currency == 'lira'">{{ data.item_cost.toLocaleString() }} L.L</td>
+                            <!-- <td ng-if="data.currency == 'lira'">{{ data.item_cost.toLocaleString() }} L.L</td> -->
                             <!-- euro -->
                             <td ng-if="data.currency == 'euro'">
-                                {{ euroRound(data.item_cost * euroRate.rate_value).toLocaleString() }}$ <span
+                                {{ (data.item_cost * euroRate.rate_value).toLocaleString() }}$ <span
                                     class="text-danger">({{ data.item_cost.toLocaleString() }}€)</span>
                             </td>
                             <!-- dollar -->
                             <td ng-if="data.currency == 'dollar'">
-                                {{ round(data.item_cost * exchangeRate.rate_value).toLocaleString() }} L.L <span
-                                    class="text-success">({{ data.item_cost.toLocaleString() }}$)</span>
+                                <!-- {{ round(data.item_cost * exchangeRate.rate_value).toLocaleString() }} L.L  -->
+                                <span>{{ data.item_cost.toLocaleString() }}$</span>
                             </td>
 
                             <!-- lira -->
-                            <td ng-if="data.currency == 'lira'">{{ data.item_price.toLocaleString() }} L.L</td>
+                            <!-- <td ng-if="data.currency == 'lira'">{{ data.item_price.toLocaleString() }} L.L</td> -->
                             <!-- euro -->
                             <td ng-if="data.currency == 'euro'">
-                                {{ euroRound(data.item_price * euroRate.rate_value).toLocaleString() }}$ <span
+                                {{ (data.item_price * euroRate.rate_value).toLocaleString() }}$ <span
                                     class="text-danger">({{ data.item_price.toLocaleString() }}€)</span>
                             </td>
                             <!-- dollar -->
                             <td ng-if="data.currency == 'dollar'">
-                                {{ round(data.item_price * exchangeRate.rate_value).toLocaleString() }} L.L <span
-                                    class="text-success">({{ data.item_price.toLocaleString() }}$)</span>
+                                <!-- {{ round(data.item_price * exchangeRate.rate_value).toLocaleString() }} L.L -->
+                                <span>{{ data.item_price.toLocaleString() }}$</span>
                             </td>
 
                             <!-- <td>{{ data.item_notes || ' --- '}}</td> -->
@@ -221,29 +221,29 @@
                             <td>{{ data.percentage_cost }}%</td>
 
                             <!-- lira -->
-                            <td ng-if="data.currency == 'lira'">{{ data.item_cost.toLocaleString() }} L.L</td>
+                            <!-- <td ng-if="data.currency == 'lira'">{{ data.item_cost.toLocaleString() }} L.L</td> -->
                             <!-- euro -->
                             <td ng-if="data.currency == 'euro'">
-                                {{ euroRound(data.item_cost * euroRate.rate_value).toLocaleString() }}$ <span
+                                {{ (data.item_cost * euroRate.rate_value).toLocaleString() }}$ <span
                                     class="text-danger">({{ data.item_cost.toLocaleString() }}€)</span>
                             </td>
                             <!-- dollar -->
                             <td ng-if="data.currency == 'dollar'">
-                                {{ round(data.item_cost * exchangeRate.rate_value).toLocaleString() }} L.L <span
-                                    class="text-success">({{ data.item_cost.toLocaleString() }}$)</span>
+                                <!-- {{ round(data.item_cost * exchangeRate.rate_value).toLocaleString() }} L.L  -->
+                                <span>{{ data.item_cost.toLocaleString() }}$</span>
                             </td>
 
                             <!-- lira -->
-                            <td ng-if="data.currency == 'lira'">{{ data.item_price.toLocaleString() }} L.L</td>
+                            <!-- <td ng-if="data.currency == 'lira'">{{ data.item_price.toLocaleString() }} L.L</td> -->
                             <!-- euro -->
                             <td ng-if="data.currency == 'euro'">
-                                {{ euroRound(data.item_price * euroRate.rate_value).toLocaleString() }}$ <span
+                                {{ (data.item_price * euroRate.rate_value).toLocaleString() }}$ <span
                                     class="text-danger">({{ data.item_price.toLocaleString() }}€)</span>
                             </td>
                             <!-- dollar -->
                             <td ng-if="data.currency == 'dollar'">
-                                {{ round(data.item_price * exchangeRate.rate_value).toLocaleString() }} L.L <span
-                                    class="text-success">({{ data.item_price.toLocaleString() }}$)</span>
+                                <!-- {{ round(data.item_price * exchangeRate.rate_value).toLocaleString() }} L.L  -->
+                                <span>{{ data.item_price.toLocaleString() }}$</span>
                             </td>
 
                             <td ng-click="openItemsModal('edit', data)" class="info-hover text-info"><i
@@ -381,17 +381,16 @@
                                 <label class="form-check-label text-danger"
                                     for="euroOption"><strong>Euro</strong></label>
                             </div>
-                            <div class="form-check">
+                            <!-- <div class="form-check">
                                 <input class="form-check-input" type="radio" name="currencyOption" id="liraOption"
                                     ng-model="itemsModal.currency" value="lira" required>
                                 <label class="form-check-label text-dark" for="liraOption"><strong>Lira
                                         L.L</strong></label>
-                            </div>
+                            </div> -->
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="currencyOption" id="dollarOption"
                                     ng-model="itemsModal.currency" value="dollar" required>
-                                <label class="form-check-label text-success" for="dollarOption"><strong>Fresh
-                                        $</strong></label>
+                                <label class="form-check-label text-success" for="dollarOption"><strong>Dollar</strong></label>
                             </div>
                         </div>
 
@@ -454,7 +453,7 @@
                         Close</button>
                     <button type="button" ng-click="deleteItem()" ng-if="itemsModalType == 'edit'"
                         class="btn btn-danger"><i class="fas fa-trash-alt"></i> Delete</button>
-                    <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Submit</button>
+                    <button ng-disabled="submitItemLoading" type="submit" class="btn btn-success"><i class="fas fa-check"></i> Submit</button>
                 </div>
             </form>
         </div>

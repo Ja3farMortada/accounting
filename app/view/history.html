@@ -79,7 +79,7 @@
                                     </span>
                                 </td>
                                 <td>{{ invoice.invoice_time }}</td>
-                                <td>{{ invoice.total_price.toLocaleString() }} L.L</td>
+                                <td>{{ invoice.total_price.toLocaleString() }}$</td>
                             </tr>
 
                             <tr ng-if="salesInvoices.length == 0">
@@ -121,43 +121,43 @@
                                                     class="fas fa-trash-alt"></i> Delete</button>
                                         </div>
                                         <div class="col-4 text-danger text-end">
-                                            <h4 class="m-0">Total: {{ totalPrice.toLocaleString() }} L.L</h4>
+                                            <h4 class="m-0">Total: {{ totalPrice.toLocaleString() }}$</h4>
                                         </div>
                                     </div>
                                 </th>
                             </tr>
                             <tr>
-                                <th width="35%">Name</th>
-                                <th width="10%">$ Rate</th>
-                                <th width="10%">Sayrafa</th>
-                                <th width="20%">Unit Price</th>
+                                <th width="45%">Name</th>
+                                <!-- <th width="10%">$ Rate</th>
+                                <th width="10%">Sayrafa</th> -->
+                                <th width="25%">Unit Price</th>
                                 <th width="5%">Qty</th>
-                                <th width="20%">Total Unit Price</th>
+                                <th width="25%">Total Unit Price</th>
                             </tr>
                         </thead>
                         <tbody>
                             <!-- sales invoice selected -->
                             <tr ng-repeat="data in items">
                                 <td>{{ data.item_description }}</td>
-                                <td>{{ data.exchange_rate.toLocaleString() }} L.L</td>
-                                <td>{{ data.sayrafa_rate.toLocaleString() }} L.L</td>
+                                <!-- <td>{{ data.exchange_rate.toLocaleString() }} L.L</td>
+                                <td>{{ data.sayrafa_rate.toLocaleString() }} L.L</td> -->
 
                                 <!-- unit price in L.L -->
-                                <td>{{ data.unit_price.toLocaleString() }} L.L
-                                    <small ng-if="data.currency == 'dollar'"
+                                <td>{{ data.unit_price.toLocaleString() }}$
+                                    <!-- <small ng-if="data.currency == 'dollar'"
                                         class="text-success">({{ data.original_price.toLocaleString() }}$)</small>
                                     <small ng-if="data.currency == 'sayrafa'"
-                                        class="text-danger">({{ data.original_price.toLocaleString() }}$)</small>
+                                        class="text-danger">({{ data.original_price.toLocaleString() }}$)</small> -->
                                 </td>
 
                                 <td>{{ data.qty }}</td>
 
                                 <!-- total Unit price in $ and L.L -->
-                                <td>{{ (data.unit_price * data.qty).toLocaleString() }} L.L
-                                    <small ng-if="data.currency == 'dollar'"
+                                <td>{{ (data.unit_price * data.qty).toLocaleString() }}$
+                                    <!-- <small ng-if="data.currency == 'dollar'"
                                         class="text-success">({{ (data.original_price * data.qty).toLocaleString() }}$)</small>
                                     <small ng-if="data.currency == 'sayrafa'"
-                                        class="text-danger">({{ (data.original_price * data.qty).toLocaleString() }}$)</small>
+                                        class="text-danger">({{ (data.original_price * data.qty).toLocaleString() }}$)</small> -->
                                 </td>
                             </tr>
 

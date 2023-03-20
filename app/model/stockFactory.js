@@ -150,6 +150,11 @@ app.factory('stockFactory', function ($http, NotificationService) {
     };
     getItems();
 
+    // fetch items
+    model.fetchItems = () => {
+        getItems();
+    }
+
     // get low Stock Items
     const getlowStockItems = () => {
         $http.get(`${url}/getLowStockItems`).then(response => {

@@ -5,7 +5,6 @@
                 <table class="table table-hover text-center table-sm">
                     <thead>
                         <tr>
-                            <!-- <th></th> -->
                             <th colspan="2">
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-search"></i></span>
@@ -13,14 +12,12 @@
                                         placeholder="Name ..." ng-model="searchCustomer.customer_name" spellcheck="false">
                                 </div>
                             </th>
-                            <th colspan="3">Remaining Debts</th>
+                            <th>Remaining</th>
                         </tr>
                         <tr>
-                            <th width="5%">#</th>
-                            <th width="35%">Name</th>
-                            <th width="15%">USD</th>
-                            <th width="15%">Syrfa</th>
-                            <th width="30%">LBP</th>
+                            <th width="10%">#</th>
+                            <th width="60%">Name</th>
+                            <th width="30%">USD</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -30,18 +27,14 @@
                             <td>{{ data.customer_ID }}</td>
                             <td>{{ data.customer_name }}</td>
                             <td class="text-success">{{ data.dollar_debt.toLocaleString() }} $</td>
-                            <td class="text-danger">{{ data.sayrafa_debt.toLocaleString() }} $</td>
-                            <td>{{ data.lira_debt.toLocaleString() }} L.L</td>
-                            <!-- <td class="hover-success text-success" ng-click="sendWhatsapp(data)"><i class="fab fa-whatsapp"></i></td> -->
-                            <!-- <td><a href="https://api.whatsapp.com/send?phone=96170846278&message=hi" target="_blank">test</a></td> -->
                         </tr>
         
                         <tr ng-if="customers.length == 0" class="table-active">
-                            <td colspan="5">There are no data available yet!</td>
+                            <td colspan="3">There are no data available yet!</td>
                         </tr>
         
                         <tr class="table-active" ng-if="(customers | filter: searchCustomer).length == 0 && searchCustomer">
-                            <td colspan="5">No matching records found!</td>
+                            <td colspan="3">No matching records found!</td>
                         </tr>
                     </tbody>
                 </table>
@@ -56,7 +49,7 @@
     <div class="col-8">
         <div class="card" ng-show="selectedCustomer.customer_ID">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <button class="btn btn-success" ng-click="sendWhatsapp()"><i class="fab fa-whatsapp fa-xl"></i> Send Whatsapp</button>
+                <!-- <button class="btn btn-success" ng-click="sendWhatsapp()"><i class="fab fa-whatsapp fa-xl"></i> Send Whatsapp</button> -->
 
                 <div class="text-center">
                     <h5 class="mb-0"><strong>{{ selectedCustomer.customer_name }}</strong></h5>
@@ -119,9 +112,7 @@
 
                             <!-- Amount -->
                             <td ng-class="{'text-success': data.currency == 'dollar', 'text-danger': data.currency == 'sayrafa'}">
-                                {{ (data.original_price * data.qty).toLocaleString() }}
-                                <span ng-show="data.currency == 'lira'">L.L</span>
-                                <span ng-show="data.currency == 'dollar' || data.currency == 'sayrafa'">$</span>
+                                {{ (data.value * data.qty).toLocaleString() }}$
                             </td>
 
 

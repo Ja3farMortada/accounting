@@ -1,13 +1,22 @@
 <div class="container-fluid">
     <div class="row g-1">
         <!-- opened invoices section -->
-        <div class="col-4">
-            <div class="card mt-2">
-                <div class="card-header">
-                    test
+        <div class="col-4 mt-3">
+            <div class="card">
+                <div class="card-header pb-0">
+                    <ul class="nav nav-tabs nav-fill">
+                        <li class="nav-item">
+                            <a ng-click="setTab(1)" ng-class="{'active': selectedTab == 1}" class="nav-link"><i
+                                    class="fas fa-receipt fa-lg"></i> Opened Invoices</a>
+                        </li>
+                        <li class="nav-item">
+                            <a ng-click="setTab(2)" ng-class="{'active': selectedTab == 2}" class="nav-link"><i
+                                    class="fas fa-search fa-lg"></i> Search</a>
+                        </li>
+                    </ul>
                 </div>
                 <div class="card-body p-0">
-                    <table class="table table-sm table-hover text-center table-striped">
+                    <table ng-show="selectedTab == 1" class="table table-sm table-hover text-center table-stripeds">
                         <thead>
                             <tr>
                                 <th>#</th>
@@ -20,10 +29,25 @@
                                 ng-class="{'table-success': selectedInvoice.invoice_ID == data.invoice_ID}">
                                 <td>{{ data.invoice_ID }}</td>
                                 <td>{{ data.customer_name }}</td>
-                                <td>{{ data.total_price.toLocaleString() }} L.L</td>
+                                <td>{{ data.total_price.toLocaleString() }}$</td>
+                            </tr>
+                            <tr ng-if="incompleteInvoice.length == 0" class="table-active">
+                                <td colspan="3">No open invoices yet!</td>
                             </tr>
                         </tbody>
                     </table>
+
+                    <!-- search invoice -->
+                    <div class="m-3" ng-show="selectedTab == 2">
+                        <form ng-submit="searchInvoice()">
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">#</span>
+                                <input ng-model="searchData" id="searchInvoice" type="number" class="form-control"
+                                    placeholder="Search Invoice">
+                                <button class="btn btn-outline-secondary" type="submit">Search</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
                 <div class="card-footer">
                     <button class="btn btn-secondary" ng-click="clearSelection()">Clear Selection</button>
@@ -33,9 +57,9 @@
 
 
         <!-- invoice section -->
-        <div class="col-8">
+        <div class="col-8  mt-3" ng-show="selectedTab == 1">
             <!-- invoice table -->
-            <div class="card mt-2">
+            <div class="card">
                 <div class="card-header">
                     <div class="row d-flex justify-content-between align-items-center">
                         <!-- hold invoice Button or customer name  -->
@@ -47,11 +71,11 @@
                         </div>
 
                         <!-- total price -->
-                        <div class="col-auto">
-                            <h4 class="text-end text-primary m-0">
+                        <div class="col-auto text-end">
+                            <h4 class="text-primary m-0">
                                 Total: {{ totalPrice.toLocaleString() }}$
                             </h4>
-                            <span>Total: {{ round(totalPrice * exchangeRate.rate_value).toLocaleString() }} L.L</span>
+                            <span>{{ round(totalPrice * exchangeRate.rate_value).toLocaleString() }} L.L</span>
                         </div>
                     </div>
                 </div>
@@ -73,21 +97,14 @@
                                 <td class="p-1">{{ data.item_description }}</td>
 
                                 <!-- unit price lira -->
-                                <td class="p-1">{{ round(data.unit_price * exchangeRate.rate_value).toLocaleString() }}
-                                    L.L
-                                    <span class="text-success">({{ data.unit_price.toLocaleString() }}$)</span>
-                                </td>
+                                <td class="p-1">{{ data.unit_price.toLocaleString() }}$</td>
 
                                 <!-- qty input -->
                                 <td class="p-1">{{ data.qty }}</td>
 
                                 <!-- total -->
                                 <td class="p-1">
-                                    {{ round((data.unit_price * data.qty) * exchangeRate.rate_value).toLocaleString() }}
-                                    L.L
-                                    <span
-                                        class="text-success">({{ (data.unit_price * data.qty).toLocaleString() }}$)</span>
-                                </td>
+                                    {{ (data.unit_price * data.qty).toLocaleString() }}$</td>
 
                                 <!-- edit price on the go -->
                                 <td width="5%" ng-click="openPriceModal($index)" class="info-hover text-info p-1"><i
@@ -140,26 +157,35 @@
                         <!-- checkout buttons -->
                         <div class="row" ng-if="!editMode">
                             <div class="col-auto">
-                                <button ng-show="invoice.length > 0" class="btn btn-success" ng-click="checkout()"><i
-                                        class="fas fa-cart-arrow-down"></i>
-                                    Checkout</button>
+                                <!-- add as debt -->
+                                <button class="btn btn-danger" ng-click="openCustomerModal('debt')"><i
+                                        class="fas fa-user-pen"></i>
+                                    Add as Debt</button>
+                                <!-- clear -->
                                 <button ng-show="invoice.length > 0" class="btn btn-secondary"
                                     ng-click="clearInvoice()"><i class="fas fa-times"></i> Clear</button>
                             </div>
                             <div class="col-auto ms-auto">
-                                <button class="btn btn-danger" ng-click="openCustomerModal('debt')"><i
-                                        class="fas fa-user-pen"></i>
-                                    Add as Debt</button>
-                                <button class="btn btn-primary" ng-click="openCustomerModal('normal')"><i
-                                        class="fas fa-user-tag"></i> Register to Customer</button>
+                                <!-- checkout -->
+                                <button ng-show="invoice.length > 0" class="btn btn-success" ng-click="checkout()"><i
+                                        class="fas fa-cart-arrow-down"></i>
+                                    Checkout</button>
                             </div>
                         </div>
 
+                        <!-- edit mode buttons -->
                         <div class="row" ng-if="editMode">
                             <div class="col-auto">
-                                <button class="btn btn-success" ng-click="confirmEdit()"><i class="fas fa-check"></i>
+                                <button class="btn btn-success" ng-click="confirmEdit()"><i class="fas fa-edit"></i>
                                     Confirm Edit</button>
-                                <button class="btn btn-secondary"><i class="fas fa-times"></i> Cancel Edit</button>
+                                <button class="btn btn-secondary" ng-click="cancelEdit()"><i class="fas fa-times"></i>
+                                    Cancel Edit</button>
+                            </div>
+
+                            <!-- complete invoice -->
+                            <div class="col-auto ms-auto">
+                                <button class="btn btn-danger" ng-click="completeInvoice()"><i class="fas fa-check"></i>
+                                    Complete Invoice</button>
                             </div>
                         </div>
 
@@ -172,65 +198,79 @@
             <div class="row d-flex mt-4">
                 <div class="col-auto" ng-repeat="tab in invoicesOnHold">
                     <div class="btn-group" role="group">
-                        <button ng-class="{'active': selectedTab == ($index + 1)}"
-                            class="btn btn-outline-success btn-lgs" ng-click="switchHoldedInvoice($index)"><i
-                                class="fas fa-receipt"></i> invoice
+                        <button ng-click="switchHoldedInvoice($index)"
+                            ng-class="{'active': selectedTab == ($index + 1)}"
+                            class="btn btn-outline-success btn-lgs"><i class="fas fa-receipt"></i> invoice
                             {{ tab[0] + 1 }}</button>
-                        <button class="btn btn-outline-danger" ng-click="deleteInvoice($index)"><i
+                        <button ng-click="deleteInvoice($index)" class="btn btn-outline-danger"><i
                                 class="fas fa-times"></i></button>
                     </div>
                 </div>
             </div>
-
-
         </div>
 
-        <!-- Categories and Items -->
-        <!-- <div class="col-5">
-            <div class="card mt-2">
+        <!-- searched invoice section -->
+        <div class="col-8 mt-3" ng-show="selectedTab == 2">
+            <div ng-show="searchedInvoice" class="card">
                 <div class="card-header">
-                    <h5 class="text-center">Categories</h5>
-                </div>
-                <div class="card-body pt-1 pb-1">
-                    <div class="row">
-                        <div class="col-4 p-1 text-center" ng-repeat="data in categories" ng-if="data.show_on_sell">
-                            <div ng-class="{'bg-dark text-light': data.category_name == selectedCategory.category_name}"
-                                class="card pointer dark-hover" ng-click="setCategory(data)">
-                                <div class="card-body"><strong>{{ data.category_name }}</strong></div>
-                            </div>
+                    <div class="row d-flex justify-content-between">
+                        <div class="col-auto">
+                            <h4>Invoice #: {{ searchedInvoice.invoice_ID }}</h4>
+                        </div>
+                        <div class="col-auto">
+                            <h4>
+                                {{ searchedInvoice.customer_name }}
+                            </h4>
+                        </div>
+                        <!-- total price -->
+                        <div class="col-auto text-end">
+                            <h4 class="text-primary m-0">
+                                Total: {{ searchedInvoice.total_price.toLocaleString() }}$
+                            </h4>
+                            <!-- <span>{{ round(totalPrice * exchangeRate.rate_value).toLocaleString() }} L.L</span> -->
                         </div>
                     </div>
                 </div>
-                <hr class="m-0">
-                <div class="card-body pt-1">
-                    <h5 class="text-center m-0">{{ selectedCategory.category_name }}</h5>
-                    <div class="row">
-                        <div ng-repeat="data in items | filter:searchVal:true:strict"
-                            class="p-1 col-4 mt-2 text-center">
-                            <div class="card pointer dark-hover" ng-mousedown="mouseEvent($event, data)">
-                                <div class="card-body p-1 h6 m-0">{{ data.item_description }}</div>
-                                <div class="card-footer p-1 h6 m-0">
-                                    <span ng-if="data.currency == 'lira'">{{ data.item_price.toLocaleString() }}
-                                        L.L
-                                        (LBP)
-                                    </span>
-                                    <span
-                                        ng-if="data.currency == 'euro'">{{ round(euroRound(data.item_price * euroRate.rate_value) * exchangeRate.rate_value).toLocaleString() }}
-                                        L.L
-                                        <span class="text-danger">({{ data.item_price.toLocaleString() }}€)</span>
-                                    </span>
-                                    <span
-                                        ng-if="data.currency == 'dollar'">{{ round(data.item_price * exchangeRate.rate_value).toLocaleString() }}
-                                        L.L
-                                        <span class="text-success">({{ data.item_price.toLocaleString() }}$)</span>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="card-body p-0">
+                    <table class="table table-striped text-center table-sm">
+                        <thead>
+                            <tr>
+                                <th width="10%">Select</th>
+                                <th width="15%">Barcode</th>
+                                <th width="30%">Description</th>
+                                <th width="20%">Unit Price</th>
+                                <th width="5%">Qty</th>
+                                <th width="20%">Total Price</th>
+                                <!-- <th colspan="3" width="15%">Options</th> -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="data in searchedInvoiceMap">
+                                <td>
+                                    <input class="form-check-input" type="checkbox" value=""
+                                        ng-model="searchedInvoiceMap[$index].checkbox" ng-change="resetItemsToReturn()">
+                                </td>
+                                <td class="p-1">{{ data.barcode || ' --- ' }}</td>
+                                <td class="p-1">{{ data.item_description }}</td>
+
+                                <!-- unit price lira -->
+                                <td class="p-1">{{ data.unit_price.toLocaleString() }}$</td>
+
+                                <!-- qty input -->
+                                <td class="p-1">{{ data.qty }}</td>
+
+                                <!-- total -->
+                                <td class="p-1">
+                                    {{ (data.unit_price * data.qty).toLocaleString() }}$</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-success" ng-click="returnSelected()">Return selected</button>
                 </div>
             </div>
-        </div> -->
+        </div>
 
     </div>
 
@@ -321,6 +361,44 @@
                             <label class="form-check-label" for="sendMessage">Send Invoice on Whatsapp ?</label>
                         </div>
                     </div> -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times"></i>
+                        Close</button>
+                    <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- return items modal -->
+<div class="modal fade" id="returnModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">Return Items</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form ng-submit="submitReturn()">
+                <div class="modal-body">
+                    <table class="table table-borderless table-sm text-center">
+                        <thead>
+                            <tr>
+                                <th>Description</th>
+                                <th>Qty</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="data in itemsToReturn">
+                                <td>{{ data.item_description }}</td>
+                                <td>
+                                    <input type="number" class="form-control form-control-sm text-center" value="1"
+                                        min="0" max="{{ data.qty }}" required>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times"></i>

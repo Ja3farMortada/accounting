@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.0
+-- version 5.1.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 14, 2023 at 09:11 PM
--- Server version: 8.0.26
--- PHP Version: 7.4.29
+-- Generation Time: Mar 20, 2023 at 11:16 PM
+-- Server version: 8.0.30
+-- PHP Version: 8.0.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -43,9 +43,9 @@ CREATE TABLE `customers` (
 --
 
 INSERT INTO `customers` (`customer_ID`, `customer_name`, `customer_phone`, `customer_address`, `dollar_debt`, `euro_debt`, `lira_debt`, `customer_status`) VALUES
-(1, 'hadi', '96170856584', 'test', 830, 180, 900000, 1),
-(2, 'test 2', '9613568548', NULL, 680, 55, 800000, 1),
-(3, 'new test', '9613658458', NULL, 60.9, 18, 0, 1);
+(1, 'test', '96170859540', NULL, 2337.405, 0, 0, 1),
+(2, 'حسين ورشة صفد', '96179896886', NULL, 2000, 0, 0, 1),
+(3, 'تجربة', '96181788987', 'test', 449.39999999999986, 0, 0, 1);
 
 -- --------------------------------------------------------
 
@@ -72,20 +72,7 @@ CREATE TABLE `customers_payments` (
 --
 
 INSERT INTO `customers_payments` (`payment_ID`, `customer_ID_FK`, `payment_datetime`, `payment_account`, `payment_currency`, `payment_value`, `actual_payment_value`, `exchange_rate`, `euro_rate`, `payment_notes`, `payment_status`) VALUES
-(1, 1, '2023-03-09 17:23:28', 'sayrafa', 'lira', 20, 1400000, 80000, 70000, NULL, 1),
-(2, 2, '2023-03-09 18:43:48', 'dollar', 'lira', 100, 8000000, 80000, 70000, NULL, 1),
-(3, 2, '2023-03-09 18:45:55', 'sayrafa', 'dollar', 5, 3, 80000, 70000, NULL, 1),
-(4, 2, '2023-03-09 19:33:51', 'lira', 'lira', 100000, 100000, 80000, 70000, NULL, 1),
-(5, 2, '2023-03-09 21:49:56', 'sayrafa', 'lira', 15, 1050000, 80000, 70000, NULL, 1),
-(6, 2, '2023-03-09 21:56:09', 'lira', 'lira', 100000, 100000, 80000, 70000, NULL, 1),
-(7, 2, '2023-03-09 22:06:42', 'sayrafa', 'lira', 10, 700000, 80000, 70000, NULL, 1),
-(8, 2, '2023-03-09 22:12:25', 'lira', 'lira', 100000, 100000, 80000, 70000, NULL, 1),
-(9, 1, '2023-03-09 22:12:50', 'dollar', 'dollar', 80, 80, 80000, 70000, NULL, 1),
-(10, 1, '2023-03-09 22:13:32', 'sayrafa', 'dollar', 5, 4.5, 80000, 70000, NULL, 1),
-(11, 2, '2023-03-12 00:28:04', 'lira', 'lira', 100000, 100000, 91000, 70000, NULL, 1),
-(12, 1, '2023-03-12 14:34:27', 'dollar', 'dollar', 62, 62, 92000, 70000, NULL, 1),
-(13, 1, '2023-03-12 14:34:58', 'sayrafa', 'dollar', 45, 30, 92000, 70000, NULL, 1),
-(14, 1, '2023-03-12 14:35:22', 'dollar', 'lira', 100, 8000000, 92000, 70000, NULL, 1);
+(1, 2, '2023-03-20 16:34:47', 'dollar', 'lira', 244, 25000000, 92000, 1.07, NULL, 1);
 
 -- --------------------------------------------------------
 
@@ -132,7 +119,18 @@ CREATE TABLE `invoice` (
 --
 
 INSERT INTO `invoice` (`invoice_ID`, `user_ID_FK`, `customer_ID_FK`, `invoice_type`, `invoice_datetime`, `edited_datetime`, `total_cost`, `total_price`, `exchange_rate`, `euro_rate`, `invoice_isCompleted`, `invoice_status`) VALUES
-(1, 1, 1, 'Debt', '2023-03-14 20:38:30', '2023-03-14 20:38:30', 158, 309, 92000, 1.1, 0, 1);
+(5, 1, 1, 'Debt', '2023-03-18 01:37:38', '2023-03-18 01:40:18', 29, 55, 92000, 1.1, 1, 1),
+(6, 1, NULL, 'Sale', '2023-03-18 11:17:04', '2023-03-18 11:17:04', 1000, 1990, 92000, 1.1, 1, 1),
+(7, 1, 1, 'Debt', '2023-03-18 11:18:37', '2023-03-18 12:25:43', 229, 453, 92000, 1.1, 1, 1),
+(8, 1, 1, 'Debt', '2023-03-18 13:13:14', '2023-03-18 13:13:20', 300, 597, 92000, 1.1, 1, 1),
+(9, 1, 1, 'Debt', '2023-03-18 23:03:50', '2023-03-18 23:38:33', 397, 782, 92000, 1.1, 1, 1),
+(10, 1, 2, 'Debt', '2023-03-18 23:16:42', '2023-03-18 23:17:32', 129, 254, 92000, 1.1, 1, 1),
+(11, 1, 1, 'Debt', '2023-03-20 12:45:58', '2023-03-20 16:17:33', 439, 866, 92000, 1.1, 1, 1),
+(12, 1, 2, 'Debt', '2023-03-20 13:07:54', '2023-03-20 16:25:22', 1000, 1990, 92000, 1.1, 0, 1),
+(13, 1, NULL, 'Sale', '2023-03-20 13:08:02', '2023-03-20 13:08:02', 29, 55, 92000, 1.1, 1, 1),
+(14, 1, 3, 'Debt', '2023-03-20 15:58:49', '2023-03-20 15:59:45', 167.2, 304.4, 92000, 1.08, 1, 1),
+(15, 1, 3, 'Debt', '2023-03-20 16:25:15', '2023-03-20 16:27:49', 281.4, 553.8, 92000, 1.08, 0, 1),
+(16, 1, 1, 'Debt', '2023-03-20 16:38:37', '2023-03-20 16:38:49', 347.7025, 689.405, 92000, 1.07, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -163,8 +161,28 @@ CREATE TABLE `invoice_map` (
 --
 
 INSERT INTO `invoice_map` (`record_ID`, `invoice_ID_FK`, `item_ID_FK`, `customer_ID_FK`, `record_datetime`, `record_type`, `qty`, `currency`, `exchange_rate`, `euro_rate`, `unit_cost`, `unit_price`, `original_cost`, `original_price`, `record_status`) VALUES
-(1, 1, 1, 1, '2023-03-14 20:38:30', 'Debt', 1, 'euro', 92000, 1.1, 100, 199, 90, 180, 1),
-(2, 1, 4, 1, '2023-03-14 20:38:30', 'Debt', 2, 'dollar', 92000, 1.1, 29, 55, 29, 55, 1);
+(16, 5, 4, 1, '2023-03-18 01:40:18', 'Debt', 1, 'dollar', 92000, 1.1, 29, 55, 29, 55, 1),
+(17, 6, 1, NULL, '2023-03-18 11:17:04', 'Sale', 10, 'euro', 92000, 1.1, 100, 199, 90, 180, 1),
+(30, 7, 1, 1, '2023-03-18 12:25:43', 'Debt', 2, 'euro', 92000, 1.1, 100, 199, 90, 180, 1),
+(31, 7, 4, 1, '2023-03-18 12:25:43', 'Debt', 1, 'dollar', 92000, 1.1, 29, 55, 29, 55, 1),
+(33, 8, 1, 1, '2023-03-18 13:13:20', 'Debt', 3, 'euro', 92000, 1.1, 100, 199, 90, 180, 1),
+(41, 10, 4, 2, '2023-03-18 23:17:32', 'Debt', 1, 'dollar', 92000, 1.1, 29, 55, 29, 55, 1),
+(42, 10, 1, 2, '2023-03-18 23:17:32', 'Debt', 1, 'euro', 92000, 1.1, 100, 199, 90, 180, 1),
+(43, 9, 1, 1, '2023-03-18 23:38:33', 'Debt', 3, 'euro', 92000, 1.1, 100, 199, 90, 180, 1),
+(44, 9, 4, 1, '2023-03-18 23:38:33', 'Debt', 3, 'dollar', 92000, 1.1, 29, 55, 29, 55, 1),
+(45, 9, 3, 1, '2023-03-18 23:38:33', 'Debt', 1, 'dollar', 92000, 1.1, 10, 20, 10, 20, 1),
+(49, 13, 4, NULL, '2023-03-20 13:08:02', 'Sale', 1, 'dollar', 92000, 1.1, 29, 55, 29, 55, 1),
+(61, 14, 3, 3, '2023-03-20 15:59:45', 'Debt', 1, 'dollar', 92000, 1.08, 10, 20, 10, 20, 1),
+(62, 14, 6, 3, '2023-03-20 15:59:45', 'Debt', 6, 'dollar', 92000, 1.08, 10, 15, 10, 15, 1),
+(63, 14, 1, 3, '2023-03-20 15:59:45', 'Debt', 1, 'euro', 92000, 1.08, 97.2, 194.4, 90, 180, 1),
+(68, 11, 1, 1, '2023-03-20 16:17:33', 'Debt', 4, 'euro', 92000, 1.1, 100, 199, 90, 180, 1),
+(69, 11, 4, 1, '2023-03-20 16:17:33', 'Debt', 1, 'dollar', 92000, 1.1, 29, 55, 29, 55, 1),
+(70, 11, 6, 1, '2023-03-20 16:17:33', 'Debt', 1, 'dollar', 92000, 1.08, 10, 15, 10, 15, 1),
+(73, 12, 1, 2, '2023-03-20 16:25:22', 'Debt', 10, 'euro', 92000, 1.1, 100, 199, 90, 180, 1),
+(78, 15, 1, 3, '2023-03-20 16:27:49', 'Debt', 2, 'euro', 92000, 1.08, 97.2, 194.4, 90, 180, 1),
+(79, 15, 4, 3, '2023-03-20 16:27:49', 'Debt', 3, 'dollar', 92000, 1.08, 29, 55, 29, 55, 1),
+(84, 16, 4, 1, '2023-03-20 16:38:49', 'Debt', 2, 'dollar', 92000, 1.07, 29, 55, 29, 55, 1),
+(85, 16, 1, 1, '2023-03-20 16:38:49', 'Debt', 3, 'euro', 92000, 1.07, 96.5675, 193.135, 90.25, 180.5, 1);
 
 -- --------------------------------------------------------
 
@@ -203,10 +221,10 @@ CREATE TABLE `settings` (
 --
 
 INSERT INTO `settings` (`setting_ID`, `setting_name`, `rate_value`, `round_value`, `value`, `setting_status`) VALUES
-(1, 'exchangeRate', 92000, 1, NULL, 1),
+(1, 'exchangeRate', 92000, 10000, NULL, 1),
 (2, 'exchangeRate2', NULL, NULL, 'MjAyMy0wNS0wMQ==', 1),
 (3, 'exchangeRate3', NULL, NULL, 'dW5sb2NrZWQ=', 1),
-(4, 'euroRate', 1.1, 1, NULL, 1);
+(4, 'euroRate', 1.07, 1, NULL, 1);
 
 -- --------------------------------------------------------
 
@@ -216,12 +234,12 @@ INSERT INTO `settings` (`setting_ID`, `setting_name`, `rate_value`, `round_value
 
 CREATE TABLE `stock` (
   `item_ID` int NOT NULL,
-  `barcode` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
-  `item_name` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
-  `item_description` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `item_type` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'other',
+  `barcode` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  `item_name` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  `item_description` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `item_type` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL DEFAULT 'other',
   `category_ID_FK` int DEFAULT '1',
-  `item_sub_category` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `item_sub_category` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   `qty` int DEFAULT '0',
   `qty_limit` int DEFAULT '0',
   `currency` varchar(10) NOT NULL DEFAULT 'lira',
@@ -230,7 +248,7 @@ CREATE TABLE `stock` (
   `item_cost` double DEFAULT NULL,
   `average_cost` double DEFAULT '0',
   `item_price` double NOT NULL,
-  `item_notes` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `item_notes` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   `show_on_sell` tinyint(1) NOT NULL DEFAULT '1',
   `item_status` tinyint(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
@@ -240,10 +258,13 @@ CREATE TABLE `stock` (
 --
 
 INSERT INTO `stock` (`item_ID`, `barcode`, `item_name`, `item_description`, `item_type`, `category_ID_FK`, `item_sub_category`, `qty`, `qty_limit`, `currency`, `cost_type`, `percentage_cost`, `item_cost`, `average_cost`, `item_price`, `item_notes`, `show_on_sell`, `item_status`) VALUES
-(1, '123456', NULL, 'test 1', 'barcode', 1, NULL, 100, 10, 'euro', 'percentage', 50, 90, 0, 180, NULL, 1, 1),
+(1, '123456', NULL, 'test 1', 'barcode', 1, NULL, 63, 10, 'euro', 'percentage', 50, 90.25, 0, 180.5, NULL, 1, 1),
 (2, NULL, NULL, 'dollar test', 'other', 6, NULL, 105, 20, 'dollar', 'normal', 33, 20, 0, 30, NULL, 1, 0),
-(3, NULL, NULL, 'lira test', 'other', 1, NULL, 20, 50, 'lira', 'percentage', 30, 700000, 0, 1000000, NULL, 1, 1),
-(4, '123123', NULL, 'dollar', 'barcode', 1, NULL, 20, 10, 'dollar', 'normal', 47, 29, 0, 55, NULL, 1, 1);
+(3, '111', NULL, 'lira test', 'barcode', 1, NULL, 55, 50, 'dollar', 'normal', 50, 10, 0, 20, NULL, 1, 1),
+(4, '123123', NULL, 'dollar', 'barcode', 1, NULL, 8, 10, 'dollar', 'normal', 47, 29, 0, 55, NULL, 1, 1),
+(5, NULL, NULL, 'test', 'other', 8, NULL, 20, 10, 'euro', 'percentage', 10, 180, 0, 200, NULL, 1, 1),
+(6, NULL, NULL, 'test loading', 'other', 1, NULL, 93, 20, 'dollar', 'normal', 33, 10, 0, 15, NULL, 1, 1),
+(7, '123123123', NULL, 'testetstestt', 'barcode', 1, NULL, 100, 10, 'euro', 'percentage', 10, 90, 0, 100, NULL, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -281,10 +302,10 @@ INSERT INTO `stock_categories` (`category_ID`, `category_index`, `category_name`
 
 CREATE TABLE `users` (
   `user_ID` int NOT NULL,
-  `username` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-  `password` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-  `type` varchar(10) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT 'user',
-  `owner` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `username` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
+  `password` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
+  `type` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT 'user',
+  `owner` varchar(20) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
   `viewStock` tinyint(1) NOT NULL DEFAULT '0',
   `viewReports` tinyint(1) NOT NULL DEFAULT '0',
   `deleteInvoice` tinyint(1) NOT NULL DEFAULT '0',
@@ -380,7 +401,7 @@ ALTER TABLE `customers`
 -- AUTO_INCREMENT for table `customers_payments`
 --
 ALTER TABLE `customers_payments`
-  MODIFY `payment_ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `payment_ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `debts_history`
@@ -392,13 +413,13 @@ ALTER TABLE `debts_history`
 -- AUTO_INCREMENT for table `invoice`
 --
 ALTER TABLE `invoice`
-  MODIFY `invoice_ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `invoice_ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `invoice_map`
 --
 ALTER TABLE `invoice_map`
-  MODIFY `record_ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `record_ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=86;
 
 --
 -- AUTO_INCREMENT for table `reminders`
@@ -416,7 +437,7 @@ ALTER TABLE `settings`
 -- AUTO_INCREMENT for table `stock`
 --
 ALTER TABLE `stock`
-  MODIFY `item_ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `item_ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `stock_categories`

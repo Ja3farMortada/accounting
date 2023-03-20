@@ -1,4 +1,4 @@
-app.factory('sellFactory', function ($http, NotificationService, rateFactory, euroFactory, mainFactory, customersFactory, debtsFactory) {
+app.factory('sellFactory', function ($http, NotificationService, rateFactory, euroFactory, mainFactory, customersFactory, debtsFactory, DateService, stockFactory) {
 
     // define URL
     const url = `http://localhost:3000`;
@@ -8,9 +8,13 @@ app.factory('sellFactory', function ($http, NotificationService, rateFactory, eu
         category_name: 'No Category Selected!'
     });
     model.invoice = new BehaviorSubject([]);
+    model.searchedInvoice = new BehaviorSubject();
+    model.searchedInvoiceMap = new BehaviorSubject();
     model.incompleteInvoice = new BehaviorSubject([]);
     model.invoicesOnHold = new BehaviorSubject([]);
-    model.selectedTab = new BehaviorSubject();
+    model.selectedInvoiceTab = new BehaviorSubject();
+    model.selectedInvoice = new BehaviorSubject(null);
+    model.selectedTab = new BehaviorSubject(1);
     model.searchVal = new BehaviorSubject({
         category_ID_FK: null
     })
@@ -23,6 +27,8 @@ app.factory('sellFactory', function ($http, NotificationService, rateFactory, eu
     mainFactory.loggedInUser.subscribe(res => {
         model.loggedInUser = res;
     })
+
+    model.itemsToReturn = new BehaviorSubject([])
 
 
     // calculate total
@@ -112,42 +118,44 @@ app.factory('sellFactory', function ($http, NotificationService, rateFactory, eu
             debtsFactory.getCustomerHistory(debtsFactory.selectedCustomer);
             // fetch customers to update debts
             await customersFactory.fetchCustomers();
-            if (msg) {
-                let index = customersFactory.customers.findIndex(x => x.customer_ID == id);
-                let customer = customersFactory.customers[index]
-                let nl = `%0A`;
-                let itemsText = ``;
-                data.forEach(element => {
-                    itemsText += `- ${element.qty} * ${element.item_description} of total ${(element.qty * element.original_price).toLocaleString()}${element.currency == 'lira' ? 'L.L' : '$'} ${element.currency == 'euro' ? 'on euro Rate' : ''} ${nl}`
-                });
-                let text = `New Invoice %23:${response.data}${nl}${itemsText}Your latest balance is:${nl}- Fresh USD: ${customer.dollar_debt.toLocaleString()}$${nl}- euro: ${customer.euro_debt.toLocaleString()}$${nl}- LBP: ${customer.lira_debt.toLocaleString()} L.L${nl}Salameh Cell`;
-                window.electron.send('send-whatsapp', [customer.customer_phone, text]);
-            }
+            model.fetchIncompleteInvoice();
         }, error => {
             NotificationService.showError(error);
         })
     }
 
-    // checkout without debt
-    model.checkoutCustomer = (id, data) => {
+    // confirm edit
+    model.confirmEdit = (selectedInvoice, data) => {
         let invoice = {
-            user_ID_FK: model.loggedInUser.user_ID,
-            customer_ID_FK: id,
-            invoice_type: 'Sale',
+            invoice_ID: selectedInvoice.invoice_ID,
+            customer_ID_FK: selectedInvoice.customer_ID,
+            invoice_type: 'Debt',
             total_cost: model.total().totalCost,
             total_price: model.total().totalPrice,
-            exchange_rate: model.exchangeRate.setting_value,
-            euro_rate: model.euroRate.rate_value
+            edited_datetime: `${DateService.getDate()} ${DateService.getTime()}`
         }
-        return $http.post(`${url}/checkoutCustomer`, {
-            items: data,
-            invoice: invoice
+        // console.log(invoice);
+        $http.post(`${url}/confirmEditInvoice`, {
+            oldInvoice: selectedInvoice,
+            invoice: invoice,
+            items: data
         }).then(response => {
-            model.clearInvoice();
             NotificationService.showSuccess();
-            // fetch customers to update debts
             customersFactory.fetchCustomers();
-            return response;
+            model.fetchIncompleteInvoice();
+            model.selectedInvoice.next(response.data);
+            stockFactory.fetchItems();
+        }, error => {
+            NotificationService.showError(error);
+        })
+    }
+
+    model.completeInvoice = invoice => {
+        $http.post(`${url}/completeInvoice`, invoice).then(response => {
+            NotificationService.showSuccess();
+            model.fetchIncompleteInvoice();
+            model.selectedInvoice.next(null);
+            model.clearInvoice();
         }, error => {
             NotificationService.showError(error);
         })
@@ -156,8 +164,24 @@ app.factory('sellFactory', function ($http, NotificationService, rateFactory, eu
     // clear invoice
     model.clearInvoice = function () {
         model.invoice.next([])
-        model.selectedTab.next(null)
+        model.selectedInvoiceTab.next(null)
     };
+
+
+    // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Search invoice logic %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    model.searchInvoice = id => {
+        $http.get(`${url}/searchInvoice/${id}`).then(response => {
+            // if (response.data.length)
+            if (response.data) {
+                model.searchedInvoice.next(response.data);
+                model.searchedInvoiceMap.next(response.data.invoice_map)
+            } else {
+                NotificationService.showErrorText(`No Invoice Found!`)
+            }
+        }, error => {
+            NotificationService.showError(error);
+        })
+    }
 
 
     return model;

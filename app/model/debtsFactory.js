@@ -14,6 +14,7 @@ app.factory('debtsFactory', function ($http, NotificationService, customersFacto
         return $http.get(`${url}/getCustomerHistory/${customer.customer_ID}`).then(response => {
             model.selectedCustomer = customer;
             angular.copy(response.data, model.selectedCustomerHistory);
+            console.log(response.data);
             return;
         }, error => {
             NotificationService.showError(error);
