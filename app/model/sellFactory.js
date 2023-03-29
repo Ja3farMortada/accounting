@@ -40,7 +40,7 @@ app.factory('sellFactory', function ($http, NotificationService, rateFactory, eu
         return invoice.reduce(function (memo, item) { // memo is the reduced value initialized by object of zero values
             return {
                 totalCost: memo.totalCost + (item.qty * item.unit_cost),
-                totalPrice: memo.totalPrice + (item.qty * item.unit_price)
+                totalPrice: memo.totalPrice + (item.qty * item.discounted_price)
             };
         }, {
             totalCost: 0,

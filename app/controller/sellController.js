@@ -46,6 +46,7 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, ra
 
         incompleteInvoiceSub = sellFactory.incompleteInvoice.subscribe(res => {
             $scope.incompleteInvoice = res;
+            console.log(res);
         })
 
         onHoldSubscribtion = sellFactory.invoicesOnHold.subscribe(res => {
@@ -163,14 +164,14 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, ra
                 if (data) {
                     switch (data.currency) {
                         case 'euro':
-                            // unitCost = $scope.euroRound(data.item_cost * $scope.euroRate.rate_value)
-                            // unitPrice = $scope.euroRound(data.item_price * $scope.euroRate.rate_value)
                             unitCost = $scope.euroRate.rate_value * data.item_cost;
                             unitPrice = $scope.euroRate.rate_value * data.item_price;
+                            discountedPrice = $scope.euroRate.rate_value * data.item_price;
                             break;
                         case 'dollar':
                             unitCost = data.item_cost;
                             unitPrice = data.item_price;
+                            discountedPrice = data.item_price;
                             break;
 
                     }
@@ -183,8 +184,10 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, ra
                         euro_rate: $scope.euroRate.rate_value,
                         original_cost: data.item_cost,
                         original_price: data.item_price,
+                        discount: 0,
                         unit_cost: unitCost,
                         unit_price: unitPrice,
+                        discounted_price: discountedPrice,
                         qty: 1
                     }
                     let found = false;
@@ -217,14 +220,13 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, ra
                     case 'euro':
                         unitCost = $scope.euroRate.rate_value * data.item_cost;
                         unitPrice = $scope.euroRate.rate_value * data.item_price;
+                        discountedPrice = $scope.euroRate.rate_value * data.item_price;
                         break;
                     case 'dollar':
                         unitCost = data.item_cost;
                         unitPrice = data.item_price;
+                        discountedPrice = data.item_price;
                         break;
-                        // case 'lira':
-                        //     unitPrice = data.item_price;
-                        //     break;
 
                 }
                 itemToAdd = {
@@ -236,8 +238,10 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, ra
                     euro_rate: $scope.euroRate.rate_value,
                     original_cost: data.item_cost,
                     original_price: data.item_price,
+                    discount: 0,
                     unit_cost: unitCost,
                     unit_price: unitPrice,
+                    discounted_price: discountedPrice,
                     qty: 1
                 }
                 let found = false;
@@ -409,7 +413,6 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, ra
 
     // cancel edit invoice
     $scope.cancelEdit = async () => {
-        console.log($scope.selectedInvoice);
         let res = await NotificationService.showWarning();
         if (res.isConfirmed) {
             $scope.$digest($scope.selectInvoice($scope.selectedInvoice));
@@ -425,17 +428,17 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, ra
     // priceModal
     const priceModal = new bootstrap.Modal('#priceModal');
     $('#priceModal').on('shown.bs.modal', () => {
-        $('#newPrice').trigger('focus');
+        $('#newValue').trigger('focus');
     });
     $('#priceModal').on('hidden.bs.modal', () => {
         $scope.triggerFocus()
     })
 
+    // price modal and percentage modal
     let selectedInvoiceIndex;
     $scope.openPriceModal = index => {
         $scope.priceModalData = {
-            newPrice: null,
-            currency: null,
+            newValue: null,
             original_currency: $scope.invoice[index].currency
         };
         selectedInvoiceIndex = index;
@@ -444,15 +447,33 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, ra
         priceModal.show();
     }
 
-    $scope.submitNewPrice = () => {
-        let data = $scope.invoice[selectedInvoiceIndex];
-        if ($scope.priceModalData.currency == 'lira' || $scope.priceModalData.currency == null) {
-            data['unit_price'] = $scope.priceModalData.newPrice;
-        } else {
-            data['original_price'] = $scope.priceModalData.newPrice;
-            data['unit_price'] = data['currency'] == 'dollar' ? $scope.round(data.original_price * $scope.exchangeRate.rate_value) : $scope.euroRound(data.original_price * $scope.euroRate.rate_value);
-        }
+    $scope.submitNewValue = () => {
+        $scope.invoice[selectedInvoiceIndex]['unit_price'] = $scope.priceModalData.newValue;
         priceModal.hide();
+    }
+
+    // percentage modal
+    const percentageModal = new bootstrap.Modal('#percentageModal');
+    $('#percentageModal').on('shown.bs.modal', () => {
+        $('#newPercentage').trigger('focus');
+    });
+    $('#percentageModal').on('hidden.bs.modal', () => {
+        $scope.triggerFocus()
+    })
+    $scope.openPercentageModal = index => {
+        $scope.percentageModalData = {
+            newValue: null
+        };
+        selectedInvoiceIndex = index;
+        $scope.dataToEdit = {};
+        angular.copy($scope.invoice[index], $scope.dataToEdit);
+        percentageModal.show();
+    }
+
+    $scope.submitNewPercentage = () => {
+        $scope.invoice[selectedInvoiceIndex]['discount'] = $scope.percentageModalData.newValue;
+        $scope.invoice[selectedInvoiceIndex]['discounted_price'] = $scope.invoice[selectedInvoiceIndex]['unit_price'] - ($scope.invoice[selectedInvoiceIndex]['unit_price'] * $scope.percentageModalData.newValue / 100)
+        percentageModal.hide();
     }
 
 

@@ -91,10 +91,15 @@ app.controller('debtsController', function ($scope, debtsFactory, customersFacto
         }
     }
 
-    $scope.sendWhatsapp = () => {
-        let data = $scope.selectedCustomer;
-        let nl = `%0A`;
-        let text = `Dear Customer${nl}Please settle your debts${nl}Your current balance is:${nl}- Fresh USD: ${data.dollar_debt.toLocaleString()}$${nl}- euro: ${data.euro_debt.toLocaleString()}$${nl}- LBP: ${data.lira_debt.toLocaleString()} L.L${nl}Salameh Cell`
-        window.electron.send('send-whatsapp', [data.customer_phone, text])
+    // $scope.sendWhatsapp = () => {
+    //     let data = $scope.selectedCustomer;
+    //     let nl = `%0A`;
+    //     let text = `Dear Customer${nl}Please settle your debts${nl}Your current balance is:${nl}- Fresh USD: ${data.dollar_debt.toLocaleString()}$${nl}- euro: ${data.euro_debt.toLocaleString()}$${nl}- LBP: ${data.lira_debt.toLocaleString()} L.L${nl}Salameh Cell`
+    //     window.electron.send('send-whatsapp', [data.customer_phone, text])
+    // }
+
+    $scope.openDetailsModal = data => {
+        $scope.invoiceDetails = data.invoice_map;
+        $('#detailsModal').modal('show');
     }
 })

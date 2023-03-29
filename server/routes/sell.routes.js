@@ -4,7 +4,7 @@ module.exports = (app, db) => {
     // get incomplete invoices
     app.get('/getIncompleteInvoices', async (req, res) => {
         let query = `SELECT I.invoice_ID, I.customer_ID_FK AS customer_ID, I.invoice_type, DATE(I.invoice_datetime) AS invoice_date, TIME(I.invoice_datetime) AS invoice_time, I.edited_datetime AS edited_datetime, I.total_cost, I.total_price, C.customer_name AS customer_name, U.owner AS user, 
-        JSON_ARRAYAGG(JSON_OBJECT('record_ID', M.record_ID, 'item_ID_FK', M.item_ID_FK, 'barcode', S.barcode, 'item_description', S.item_description, 'qty', M.qty, 'currency', M.currency, 'exchange_rate', M.exchange_rate, 'euro_rate', M.euro_rate, 'unit_cost', M.unit_cost, 'original_cost', M.original_cost, 'original_price', M.original_price, 'unit_price', M.unit_price)) invoice_map FROM invoice AS I
+        JSON_ARRAYAGG(JSON_OBJECT('record_ID', M.record_ID, 'item_ID_FK', M.item_ID_FK, 'barcode', S.barcode, 'item_description', S.item_description, 'qty', M.qty, 'currency', M.currency, 'exchange_rate', M.exchange_rate, 'euro_rate', M.euro_rate, 'discount', M.discount, 'unit_cost', M.unit_cost, 'original_cost', M.original_cost, 'original_price', M.original_price, 'discounted_price', M.discounted_price, 'unit_price', M.unit_price)) invoice_map FROM invoice AS I
         INNER JOIN invoice_map AS M ON I.invoice_ID = M.invoice_ID_FK
         INNER JOIN stock AS S ON S.item_ID = M.item_ID_FK
         INNER JOIN users AS U ON I.user_ID_FK = U.user_ID
@@ -44,10 +44,10 @@ module.exports = (app, db) => {
             const [result] = await connection.query(`INSERT INTO invoice SET ?`, [invoice]);
             let invoice_ID = result.insertId;
             let invoice_map = Array.from(items).map(function (item) {
-                return [invoice_ID, item.item_ID, invoice.invoice_type, item.qty, item.currency, item.exchange_rate, item.euro_rate, item.unit_cost, item.original_cost, item.original_price, item.unit_price]
+                return [invoice_ID, item.item_ID, invoice.invoice_type, item.qty, item.currency, item.discount, item.discounted_price, item.exchange_rate, item.euro_rate, item.unit_cost, item.original_cost, item.original_price, item.unit_price]
             });
 
-            await connection.query(`INSERT INTO invoice_map (invoice_ID_FK, item_ID_FK, record_type, qty, currency, exchange_rate, euro_rate, unit_cost, original_cost, original_price, unit_price) VALUES ?`, [invoice_map]);
+            await connection.query(`INSERT INTO invoice_map (invoice_ID_FK, item_ID_FK, record_type, qty, currency, discount, discounted_price, exchange_rate, euro_rate, unit_cost, original_cost, original_price, unit_price) VALUES ?`, [invoice_map]);
 
             // update stock quantity
             let queries = '';
@@ -84,9 +84,9 @@ module.exports = (app, db) => {
             
             let invoice_ID = result.insertId;
             let invoice_map = Array.from(items).map(function (item) {
-                return [invoice_ID, item.item_ID, invoice.customer_ID_FK, invoice.invoice_type, item.qty, item.currency, item.exchange_rate, item.euro_rate, item.unit_cost, item.unit_price, item.original_cost, item.original_price]
+                return [invoice_ID, item.item_ID, invoice.customer_ID_FK, invoice.invoice_type, item.qty, item.currency, item.discount, item.discounted_price, item.exchange_rate, item.euro_rate, item.unit_cost, item.unit_price, item.original_cost, item.original_price]
             });
-            let mapQuery = `INSERT INTO invoice_map (invoice_ID_FK, item_ID_FK, customer_ID_FK, record_type, qty, currency, exchange_rate, euro_rate, unit_cost, unit_price, original_cost, original_price) VALUES ?`;
+            let mapQuery = `INSERT INTO invoice_map (invoice_ID_FK, item_ID_FK, customer_ID_FK, record_type, qty, currency, discount, discounted_price, exchange_rate, euro_rate, unit_cost, unit_price, original_cost, original_price) VALUES ?`;
             await connection.query(mapQuery, [invoice_map]);
 
             let totalDebts = items.reduce((memo, item) => {
@@ -155,9 +155,9 @@ module.exports = (app, db) => {
 
             // map query
             let invoice_map = Array.from(items).map(function (item) {
-                return [invoice_ID, item.item_ID || item.item_ID_FK, invoice.customer_ID_FK, invoice.invoice_type, item.qty, item.currency, item.exchange_rate, item.euro_rate, item.unit_cost, item.unit_price, item.original_cost, item.original_price]
+                return [invoice_ID, item.item_ID || item.item_ID_FK, invoice.customer_ID_FK, invoice.invoice_type, item.qty, item.currency, item.discount, item.discounted_price, item.exchange_rate, item.euro_rate, item.unit_cost, item.unit_price, item.original_cost, item.original_price]
             });
-            let mapQuery = `INSERT INTO invoice_map (invoice_ID_FK, item_ID_FK, customer_ID_FK, record_type, qty, currency, exchange_rate, euro_rate, unit_cost, unit_price, original_cost, original_price) VALUES ?`;
+            let mapQuery = `INSERT INTO invoice_map (invoice_ID_FK, item_ID_FK, customer_ID_FK, record_type, qty, currency, discount, discounted_price, exchange_rate, euro_rate, unit_cost, unit_price, original_cost, original_price) VALUES ?`;
             await connection.query(mapQuery, [invoice_map]);
 
             // update customer debt
@@ -180,7 +180,7 @@ module.exports = (app, db) => {
             await connection.commit();
 
             let [[response]] = await db.query(`SELECT I.invoice_ID, I.customer_ID_FK AS customer_ID, I.invoice_type, DATE(I.invoice_datetime) AS invoice_date, TIME(I.invoice_datetime) AS invoice_time, I.edited_datetime AS edited_datetime, I.total_cost, I.total_price, C.customer_name AS customer_name, U.owner AS user, 
-            JSON_ARRAYAGG(JSON_OBJECT('record_ID', M.record_ID, 'item_ID_FK', M.item_ID_FK, 'barcode', S.barcode, 'item_description', S.item_description, 'qty', M.qty, 'currency', M.currency, 'exchange_rate', M.exchange_rate, 'euro_rate', M.euro_rate, 'unit_cost', M.unit_cost, 'original_cost', M.original_cost, 'original_price', M.original_price, 'unit_price', M.unit_price)) invoice_map FROM invoice AS I
+            JSON_ARRAYAGG(JSON_OBJECT('record_ID', M.record_ID, 'item_ID_FK', M.item_ID_FK, 'barcode', S.barcode, 'item_description', S.item_description, 'qty', M.qty, 'currency', M.currency, 'discount', M.discount, 'exchange_rate', M.exchange_rate, 'euro_rate', M.euro_rate, 'unit_cost', M.unit_cost, 'original_cost', M.original_cost, 'original_price', M.original_price, 'discounted_price', M.discounted_price, 'unit_price', M.unit_price)) invoice_map FROM invoice AS I
             INNER JOIN invoice_map AS M ON I.invoice_ID = M.invoice_ID_FK
             INNER JOIN stock AS S ON S.item_ID = M.item_ID_FK
             INNER JOIN users AS U ON I.user_ID_FK = U.user_ID
@@ -217,7 +217,7 @@ module.exports = (app, db) => {
     app.get('/searchInvoice/:id', async (req, res) => {
         let ID = req.params.id;
         let query = `SELECT I.invoice_ID, I.customer_ID_FK AS customer_ID, I.invoice_type, DATE(I.invoice_datetime) AS invoice_date, TIME(I.invoice_datetime) AS invoice_time, I.edited_datetime AS edited_datetime, I.total_cost, I.total_price, C.customer_name AS customer_name, U.owner AS user, 
-        JSON_ARRAYAGG(JSON_OBJECT('record_ID', M.record_ID, 'item_ID_FK', M.item_ID_FK, 'barcode', S.barcode, 'item_description', S.item_description, 'qty', M.qty, 'currency', M.currency, 'exchange_rate', M.exchange_rate, 'euro_rate', M.euro_rate, 'unit_cost', M.unit_cost, 'original_cost', M.original_cost, 'original_price', M.original_price, 'unit_price', M.unit_price)) invoice_map FROM invoice AS I
+        JSON_ARRAYAGG(JSON_OBJECT('record_ID', M.record_ID, 'item_ID_FK', M.item_ID_FK, 'barcode', S.barcode, 'item_description', S.item_description, 'qty', M.qty, 'currency', M.currency, 'discount', M.discount, 'exchange_rate', M.exchange_rate, 'euro_rate', M.euro_rate, 'unit_cost', M.unit_cost, 'original_cost', M.original_cost, 'original_price', M.original_price, 'discounted_price', M.discounted_price, 'unit_price', M.unit_price)) invoice_map FROM invoice AS I
         INNER JOIN invoice_map AS M ON I.invoice_ID = M.invoice_ID_FK
         INNER JOIN stock AS S ON S.item_ID = M.item_ID_FK
         INNER JOIN users AS U ON I.user_ID_FK = U.user_ID

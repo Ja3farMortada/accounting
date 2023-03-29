@@ -78,7 +78,7 @@
                                     <option value="">All Types</option>
                                     <option value="Debt">Debts Transactions</option>
                                     <option value="Payment">Payments Transactions</option>
-                                    <option value="Sale">Normal Transactions</option>
+                                    <option value="Return">Return Transactions</option>
                                 </select>
                             </th>
                             <th>
@@ -93,8 +93,8 @@
                         <tr>
                             <th width="30%">Datetime</th>
                             <th width="15%">Type</th>
-                            <th width="20%">Amount</th>
-                            <th width="35%">Transactions</th>
+                            <th width="25%">Amount</th>
+                            <th width="30%">Details</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -111,20 +111,22 @@
                             </td>
 
                             <!-- Amount -->
-                            <td ng-class="{'text-success': data.currency == 'dollar', 'text-danger': data.currency == 'sayrafa'}">
-                                {{ (data.value * data.qty).toLocaleString() }}$
+                            <td>
+                                {{ data.actual_value.toLocaleString() }}
+                                <span ng-if="data.currency == 'dollar'">$</span>
+                                <span ng-if="data.currency == 'lira'">L.L</span>
                             </td>
 
 
                             <!-- transactions -->
-                            <td ng-show="data.type == 'Debt' || data.type == 'Sale'">{{ data.qty }} *
-                                {{ data.item_description }}
+                            <td ng-click="openDetailsModal(data)" class="dark-hover text-dark" ng-show="data.type == 'Debt' || data.type == 'Sale'">
+                                <i class="fas fa-eye"></i>
                             </td>
                             <td ng-show="data.type == 'Payment'">Payment Received <span
-                                    ng-if="data.type == 'Payment' && data.original_price != data.unit_cost">
-                                    <small ng-class="{'text-success': data.record_type == 'dollar', 'text-danger': data.record_type == 'sayrafa'}">(for {{ data.unit_cost.toLocaleString() }}
-                                        <span ng-if="data.record_type == 'lira'">L.L</span>
-                                        <span ng-if="data.record_type == 'dollar' || data.record_type == 'sayrafa'">$</span>)
+                                    ng-if="data.type == 'Payment' && data.value != data.original_value">
+                                    <small ng-class="{'text-success': data.status == 'dollar'}">(for {{ data.value.toLocaleString() }}
+                                        <span ng-if="data.status == 'lira'">L.L</span>
+                                        <span ng-if="data.status == 'dollar'">$</span>)
                                     </small>
                                 </span>
                             </td>
@@ -232,6 +234,46 @@
                     <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Submit</button>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="detailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">Details</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+                <div class="modal-body">
+                    <div class="card">
+                        <div class="card-body p-0">
+                            <table class="table table-striped text-center table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Description</th>
+                                        <th>Unit Price</th>
+                                        <th>Qty</th>
+                                        <th>Total Price</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="data in invoiceDetails">
+                                        <td>{{ data.item_description }}</td>
+                                        <td>{{ data.unit_price.toLocaleString() }}$</td>
+                                        <td>{{ data.qty }}</td>
+                                        <td>{{ (data.unit_price * data.qty).toLocaleString() }}$</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times"></i>
+                        Close</button>
+                    <!-- <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Submit</button> -->
+                </div>
         </div>
     </div>
 </div>

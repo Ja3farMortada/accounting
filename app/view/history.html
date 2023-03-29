@@ -127,9 +127,8 @@
                                 </th>
                             </tr>
                             <tr>
-                                <th width="45%">Name</th>
-                                <!-- <th width="10%">$ Rate</th>
-                                <th width="10%">Sayrafa</th> -->
+                                <th width="35%">Name</th>
+                                <th width="10%">Discount</th>
                                 <th width="25%">Unit Price</th>
                                 <th width="5%">Qty</th>
                                 <th width="25%">Total Unit Price</th>
@@ -139,11 +138,10 @@
                             <!-- sales invoice selected -->
                             <tr ng-repeat="data in items">
                                 <td>{{ data.item_description }}</td>
-                                <!-- <td>{{ data.exchange_rate.toLocaleString() }} L.L</td>
-                                <td>{{ data.sayrafa_rate.toLocaleString() }} L.L</td> -->
+                                <td>{{ data.discount }}%</td>
 
                                 <!-- unit price in L.L -->
-                                <td>{{ data.unit_price.toLocaleString() }}$
+                                <td>{{ data.discounted_price.toLocaleString() }}$
                                     <!-- <small ng-if="data.currency == 'dollar'"
                                         class="text-success">({{ data.original_price.toLocaleString() }}$)</small>
                                     <small ng-if="data.currency == 'sayrafa'"
@@ -153,7 +151,7 @@
                                 <td>{{ data.qty }}</td>
 
                                 <!-- total Unit price in $ and L.L -->
-                                <td>{{ (data.unit_price * data.qty).toLocaleString() }}$
+                                <td>{{ (data.discounted_price * data.qty).toLocaleString() }}$
                                     <!-- <small ng-if="data.currency == 'dollar'"
                                         class="text-success">({{ (data.original_price * data.qty).toLocaleString() }}$)</small>
                                     <small ng-if="data.currency == 'sayrafa'"
