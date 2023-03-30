@@ -11,6 +11,11 @@ app.config(function ($routeProvider) {
             controller: 'sellController'
         })
 
+        .when('/return', {
+            templateUrl: 'view/return.html',
+            controller: 'returnController'
+        })
+
         .when('/stock', {
             templateUrl: 'view/stock.html',
             controller: 'stockController'

@@ -150,3 +150,25 @@ ipcMain.handle('read-package', function () {
 ipcMain.handle('send-whatsapp', async function (event, data) {
     await shell.openExternal(`https://api.whatsapp.com/send?phone=${data[0]}&text=${data[1]}`);
 })
+
+
+// print window
+let printWindow;
+ipcMain.handle('print-invoice', async (event, data) => {
+    printWindow = new BrowserWindow({
+        width: 1200,
+        height: 1000,
+        webPreferences: {
+            preload: path.join(__dirname, 'preload.js')
+        }
+    })
+
+    printWindow.loadFile('app/templates/print-invoice.html');
+    printWindow.show();
+    printWindow.webContents.on('did-finish-load', async function () {
+        await printWindow.webContents.send('printDocument', data);
+        printWindow.webContents.print(function() {
+            printWindow.close()
+        });
+    })
+})

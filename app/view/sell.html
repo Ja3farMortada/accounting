@@ -4,7 +4,7 @@
         <div class="col-4 mt-3">
             <div class="card">
                 <div class="card-header pb-0">
-                    <ul class="nav nav-tabs nav-fill">
+                    <!-- <ul class="nav nav-tabs nav-fill">
                         <li class="nav-item">
                             <a ng-click="setTab(1)" ng-class="{'active': selectedTab == 1}" class="nav-link"><i
                                     class="fas fa-receipt fa-lg"></i> Opened Invoices</a>
@@ -13,10 +13,11 @@
                             <a ng-click="setTab(2)" ng-class="{'active': selectedTab == 2}" class="nav-link"><i
                                     class="fas fa-search fa-lg"></i> Search</a>
                         </li>
-                    </ul>
+                    </ul> -->
+                    <h5 class="text-center"><i class="fas fa-receipt"></i> Opened Invoices</h5>
                 </div>
                 <div class="card-body p-0">
-                    <table ng-show="selectedTab == 1" class="table table-sm table-hover text-center table-stripeds">
+                    <table class="table table-sm table-hover text-center table-stripeds">
                         <thead>
                             <tr>
                                 <th>#</th>
@@ -36,18 +37,6 @@
                             </tr>
                         </tbody>
                     </table>
-
-                    <!-- search invoice -->
-                    <div class="m-3" ng-show="selectedTab == 2">
-                        <form ng-submit="searchInvoice()">
-                            <div class="input-group mb-3">
-                                <span class="input-group-text">#</span>
-                                <input ng-model="searchData" id="searchInvoice" type="number" class="form-control"
-                                    placeholder="Search Invoice">
-                                <button class="btn btn-outline-secondary" type="submit">Search</button>
-                            </div>
-                        </form>
-                    </div>
                 </div>
                 <div class="card-footer">
                     <button class="btn btn-secondary" ng-click="clearSelection()">Clear Selection</button>
@@ -57,14 +46,14 @@
 
 
         <!-- invoice section -->
-        <div class="col-8  mt-3" ng-show="selectedTab == 1">
+        <div class="col-8  mt-3">
             <!-- invoice table -->
             <div class="card">
                 <div class="card-header">
                     <div class="row d-flex justify-content-between align-items-center">
                         <!-- hold invoice Button or customer name  -->
                         <div class="col-auto">
-                            <button ng-show="!selectedTab && invoice.length > 0 && !editMode" class="btn btn-warning"
+                            <button ng-show="invoice.length > 0 && !editMode" class="btn btn-warning"
                                 ng-click="holdInvoice()"><i class="fas fa-pause"></i> Hold Invoice</button>
 
                             <h4 ng-show="editMode">{{ selectedInvoice.customer_name }}</h4>
@@ -108,7 +97,8 @@
                                 <td class="p-1">
                                     {{ (data.discounted_price * data.qty).toLocaleString() }}$</td>
 
-                                <td width="4%" ng-click="openPercentageModal($index)" class="info-hover text-info p-1"><i class="fas fa-percentage"></i></td>
+                                <td width="4%" ng-click="openPercentageModal($index)" class="info-hover text-info p-1">
+                                    <i class="fas fa-percentage"></i></td>
 
                                 <!-- edit price on the go -->
                                 <td width="4%" ng-click="openPriceModal($index)" class="info-hover text-info p-1"><i
@@ -165,9 +155,15 @@
                                 <button class="btn btn-danger" ng-click="openCustomerModal('debt')"><i
                                         class="fas fa-user-pen"></i>
                                     Add as Debt</button>
+
+                                <!-- print -->
+                                <button ng-show="invoice.length > 0" class="btn btn-dark" ng-click="printInvoice()"><i
+                                        class="fas fa-print"></i> Print</button>
+
                                 <!-- clear -->
                                 <button ng-show="invoice.length > 0" class="btn btn-secondary"
                                     ng-click="clearInvoice()"><i class="fas fa-times"></i> Clear</button>
+
                             </div>
                             <div class="col-auto ms-auto">
                                 <!-- checkout -->
@@ -209,69 +205,6 @@
                         <button ng-click="deleteInvoice($index)" class="btn btn-outline-danger"><i
                                 class="fas fa-times"></i></button>
                     </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- searched invoice section -->
-        <div class="col-8 mt-3" ng-show="selectedTab == 2">
-            <div ng-show="searchedInvoice" class="card">
-                <div class="card-header">
-                    <div class="row d-flex justify-content-between">
-                        <div class="col-auto">
-                            <h4>Invoice #: {{ searchedInvoice.invoice_ID }}</h4>
-                        </div>
-                        <div class="col-auto">
-                            <h4>
-                                {{ searchedInvoice.customer_name }}
-                            </h4>
-                        </div>
-                        <!-- total price -->
-                        <div class="col-auto text-end">
-                            <h4 class="text-primary m-0">
-                                Total: {{ searchedInvoice.total_price.toLocaleString() }}$
-                            </h4>
-                            <!-- <span>{{ round(totalPrice * exchangeRate.rate_value).toLocaleString() }} L.L</span> -->
-                        </div>
-                    </div>
-                </div>
-                <div class="card-body p-0">
-                    <table class="table table-striped text-center table-sm">
-                        <thead>
-                            <tr>
-                                <th width="10%">Select</th>
-                                <th width="15%">Barcode</th>
-                                <th width="30%">Description</th>
-                                <th width="20%">Unit Price</th>
-                                <th width="5%">Qty</th>
-                                <th width="20%">Total Price</th>
-                                <!-- <th colspan="3" width="15%">Options</th> -->
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr ng-repeat="data in searchedInvoiceMap">
-                                <td>
-                                    <input class="form-check-input" type="checkbox" value=""
-                                        ng-model="searchedInvoiceMap[$index].checkbox" ng-change="resetItemsToReturn()">
-                                </td>
-                                <td class="p-1">{{ data.barcode || ' --- ' }}</td>
-                                <td class="p-1">{{ data.item_description }}</td>
-
-                                <!-- unit price lira -->
-                                <td class="p-1">{{ data.unit_price.toLocaleString() }}$</td>
-
-                                <!-- qty input -->
-                                <td class="p-1">{{ data.qty }}</td>
-
-                                <!-- total -->
-                                <td class="p-1">
-                                    {{ (data.unit_price * data.qty).toLocaleString() }}$</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="card-footer">
-                    <button class="btn btn-success" ng-click="returnSelected()">Return selected</button>
                 </div>
             </div>
         </div>

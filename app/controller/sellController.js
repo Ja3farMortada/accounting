@@ -1,4 +1,4 @@
-app.controller('sellController', function ($scope, sellFactory, stockFactory, rateFactory, euroFactory, customersFactory, NotificationService) {
+app.controller('sellController', function ($scope, sellFactory, stockFactory, rateFactory, euroFactory, customersFactory, NotificationService, DateService) {
 
     // define and trigger focus on barcode input
     $scope.triggerFocus = () => {
@@ -10,8 +10,8 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, ra
     let rateSubscription;
     let euroSubscription;
     let invoiceSubscribtion;
-    let searchedInvoiceSub;
-    let searchedInvoiceMapSub;
+    // let searchedInvoiceSub;
+    // let searchedInvoiceMapSub;
     let incompleteInvoiceSub;
     let onHoldSubscribtion;
     let tabSubscribtion;
@@ -20,7 +20,7 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, ra
     let selectedCategorySubscription;
     let searchSubscription;
     let selectedInvoiceSub;
-    let selectedTabSub;
+    // let selectedTabSub;
     let itemsToReturnSub;
     $scope.$on('$viewContentLoaded', () => {
         rateSubscription = rateFactory.exchangeRate.subscribe(res => {
@@ -36,17 +36,16 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, ra
             $scope.invoice = res;
         });
 
-        searchedInvoiceSub = sellFactory.searchedInvoice.subscribe(res => {
-            $scope.searchedInvoice = res;
-        })
+        // searchedInvoiceSub = sellFactory.searchedInvoice.subscribe(res => {
+        //     $scope.searchedInvoice = res;
+        // })
 
-        searchedInvoiceMapSub = sellFactory.searchedInvoiceMap.subscribe(res => {
-            $scope.searchedInvoiceMap = res;
-        })
+        // searchedInvoiceMapSub = sellFactory.searchedInvoiceMap.subscribe(res => {
+        //     $scope.searchedInvoiceMap = res;
+        // })
 
         incompleteInvoiceSub = sellFactory.incompleteInvoice.subscribe(res => {
             $scope.incompleteInvoice = res;
-            console.log(res);
         })
 
         onHoldSubscribtion = sellFactory.invoicesOnHold.subscribe(res => {
@@ -71,9 +70,9 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, ra
         selectedInvoiceSub = sellFactory.selectedInvoice.subscribe(res => {
             $scope.selectedInvoice = res;
         })
-        selectedTabSub = sellFactory.selectedTab.subscribe(res => {
-            $scope.selectedTab = res;
-        })
+        // selectedTabSub = sellFactory.selectedTab.subscribe(res => {
+        //     $scope.selectedTab = res;
+        // })
 
         $scope.customers = customersFactory.customers;
         $scope.triggerFocus();
@@ -92,8 +91,8 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, ra
         rateSubscription.unsubscribe();
         euroSubscription.unsubscribe();
         invoiceSubscribtion.unsubscribe();
-        searchedInvoiceSub.unsubscribe();
-        searchedInvoiceMapSub.unsubscribe();
+        // searchedInvoiceSub.unsubscribe();
+        // searchedInvoiceMapSub.unsubscribe();
         incompleteInvoiceSub.unsubscribe();
         onHoldSubscribtion.unsubscribe();
         tabSubscribtion.unsubscribe();
@@ -102,7 +101,7 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, ra
         selectedCategorySubscription.unsubscribe();
         searchSubscription.unsubscribe();
         selectedInvoiceSub.unsubscribe();
-        selectedTabSub.unsubscribe();
+        // selectedTabSub.unsubscribe();
     })
 
     $scope.setTab = tab => {
@@ -448,7 +447,7 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, ra
     }
 
     $scope.submitNewValue = () => {
-        $scope.invoice[selectedInvoiceIndex]['unit_price'] = $scope.priceModalData.newValue;
+        $scope.invoice[selectedInvoiceIndex]['discounted_price'] = $scope.priceModalData.newValue;
         priceModal.hide();
     }
 
@@ -477,27 +476,16 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, ra
     }
 
 
-    // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% search invoice and return logic %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Print Invoice %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    $scope.searchInvoice = () => {
-        sellFactory.searchInvoice($scope.searchData);
-        $scope.searchData = null;
+    $scope.printInvoice = async () => {
+        let printData = {
+            type: 'عرض أسعار',
+            date: DateService.getDate(),
+            invoice: $scope.invoice,
+            name: null
+        }
+        await window.electron.ipcRenderer.invoke('print-invoice', printData)
     }
 
-    $('#returnModal').on('hidden.bs.modal', () => {
-        $scope.resetItemsToReturn();
-    })
-    $scope.returnSelected = () => {
-        $('#returnModal').modal('show')
-        $scope.searchedInvoiceMap.forEach(element => {
-            if (element.checkbox) {
-                $scope.itemsToReturn.push(element);
-            }
-        })
-        console.log($scope.itemsToReturn);
-    }
-
-    $scope.resetItemsToReturn = () => {
-        sellFactory.itemsToReturn.next([])
-    }
 });

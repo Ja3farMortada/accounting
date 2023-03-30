@@ -53,12 +53,12 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav mb-2 mb-lg-0">
-                    <!-- <li class="nav-item">
-                        <a class="nav-link" href="#!/services"><i class="fas fa-money-check"></i> Services</a>
-                    </li> -->
                     <li class="nav-item">
                         <a ng-class="{'active': tabSelected == '/sell'}" class="nav-link" href="#!/sell"><i
                                 class="fas fa-shopping-cart"></i> Sell</a>
+                    </li>
+                    <li class="nav-item">
+                        <a ng-class="{'active': tabSelected == '/return'}" class="nav-link" href="#!/return"><i class="fas fa-arrow-rotate-left"></i> Return</a>
                     </li>
                     <li ng-if="loggedInUser.viewStock == 1" class="nav-item">
                         <a ng-class="{'active': tabSelected == '/stock'}" class="nav-link" href="#!/stock"><i
@@ -194,6 +194,7 @@
 
 <!-- Load Controllers -->
 <script src="controller/sellController.js"></script>
+<script src="controller/returnController.js"></script>
 <script src="controller/stockController.js"></script>
 <script src="controller/historyController.js"></script>
 <script src="controller/debtsController.js"></script>
@@ -201,6 +202,7 @@
 
 <!-- Load Models -->
 <script src="model/sellFactory.js"></script>
+<script src="model/returnFactory.js"></script>
 <script src="model/stockFactory.js"></script>
 <script src="model/historyFactory.js"></script>
 <script src="model/debtsFactory.js"></script>

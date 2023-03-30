@@ -8,13 +8,13 @@ app.factory('sellFactory', function ($http, NotificationService, rateFactory, eu
         category_name: 'No Category Selected!'
     });
     model.invoice = new BehaviorSubject([]);
-    model.searchedInvoice = new BehaviorSubject();
-    model.searchedInvoiceMap = new BehaviorSubject();
+    // model.searchedInvoice = new BehaviorSubject();
+    // model.searchedInvoiceMap = new BehaviorSubject();
     model.incompleteInvoice = new BehaviorSubject([]);
     model.invoicesOnHold = new BehaviorSubject([]);
     model.selectedInvoiceTab = new BehaviorSubject();
     model.selectedInvoice = new BehaviorSubject(null);
-    model.selectedTab = new BehaviorSubject(1);
+    // model.selectedTab = new BehaviorSubject(1);
     model.searchVal = new BehaviorSubject({
         category_ID_FK: null
     })
@@ -134,7 +134,6 @@ app.factory('sellFactory', function ($http, NotificationService, rateFactory, eu
             total_price: model.total().totalPrice,
             edited_datetime: `${DateService.getDate()} ${DateService.getTime()}`
         }
-        // console.log(invoice);
         $http.post(`${url}/confirmEditInvoice`, {
             oldInvoice: selectedInvoice,
             invoice: invoice,
@@ -169,19 +168,19 @@ app.factory('sellFactory', function ($http, NotificationService, rateFactory, eu
 
 
     // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Search invoice logic %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    model.searchInvoice = id => {
-        $http.get(`${url}/searchInvoice/${id}`).then(response => {
-            // if (response.data.length)
-            if (response.data) {
-                model.searchedInvoice.next(response.data);
-                model.searchedInvoiceMap.next(response.data.invoice_map)
-            } else {
-                NotificationService.showErrorText(`No Invoice Found!`)
-            }
-        }, error => {
-            NotificationService.showError(error);
-        })
-    }
+    // model.searchInvoice = id => {
+    //     $http.get(`${url}/searchInvoice/${id}`).then(response => {
+    //         // if (response.data.length)
+    //         if (response.data) {
+    //             model.searchedInvoice.next(response.data);
+    //             model.searchedInvoiceMap.next(response.data.invoice_map)
+    //         } else {
+    //             NotificationService.showErrorText(`No Invoice Found!`)
+    //         }
+    //     }, error => {
+    //         NotificationService.showError(error);
+    //     })
+    // }
 
 
     return model;
