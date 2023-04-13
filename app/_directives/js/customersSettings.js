@@ -7,7 +7,9 @@ app.directive('customersSettings', function (customersFactory, mainFactory) {
         },
         link: function (scope) {
 
-            scope.customers = customersFactory.customers;
+            customersFactory.customers.subscribe(res => {
+                scope.customers = res;
+            })
 
             let userSubscription;
             userSubscription = mainFactory.loggedInUser.subscribe(res => {
@@ -46,7 +48,7 @@ app.directive('customersSettings', function (customersFactory, mainFactory) {
                                     customer_phone: null,
                                     customer_address: null,
                                     dollar_debt: null,
-                                    sayrafa_debt: null,
+                                    // sayrafa_debt: null,
                                     lira_debt: null,
                                     customer_notes: null
                                 }

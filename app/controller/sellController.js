@@ -10,8 +10,6 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, ra
     let rateSubscription;
     let euroSubscription;
     let invoiceSubscribtion;
-    // let searchedInvoiceSub;
-    // let searchedInvoiceMapSub;
     let incompleteInvoiceSub;
     let onHoldSubscribtion;
     let tabSubscribtion;
@@ -20,8 +18,8 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, ra
     let selectedCategorySubscription;
     let searchSubscription;
     let selectedInvoiceSub;
-    // let selectedTabSub;
     let itemsToReturnSub;
+    let customersSub;
     $scope.$on('$viewContentLoaded', () => {
         rateSubscription = rateFactory.exchangeRate.subscribe(res => {
             $scope.exchangeRate = res;
@@ -35,14 +33,6 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, ra
         invoiceSubscribtion = sellFactory.invoice.subscribe(res => {
             $scope.invoice = res;
         });
-
-        // searchedInvoiceSub = sellFactory.searchedInvoice.subscribe(res => {
-        //     $scope.searchedInvoice = res;
-        // })
-
-        // searchedInvoiceMapSub = sellFactory.searchedInvoiceMap.subscribe(res => {
-        //     $scope.searchedInvoiceMap = res;
-        // })
 
         incompleteInvoiceSub = sellFactory.incompleteInvoice.subscribe(res => {
             $scope.incompleteInvoice = res;
@@ -70,11 +60,10 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, ra
         selectedInvoiceSub = sellFactory.selectedInvoice.subscribe(res => {
             $scope.selectedInvoice = res;
         })
-        // selectedTabSub = sellFactory.selectedTab.subscribe(res => {
-        //     $scope.selectedTab = res;
-        // })
 
-        $scope.customers = customersFactory.customers;
+        customersSub = customersFactory.customers.subscribe(res => {
+            $scope.customers = res;
+        })
         $scope.triggerFocus();
 
         itemsToReturnSub = sellFactory.itemsToReturn.subscribe(res => {
@@ -91,8 +80,6 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, ra
         rateSubscription.unsubscribe();
         euroSubscription.unsubscribe();
         invoiceSubscribtion.unsubscribe();
-        // searchedInvoiceSub.unsubscribe();
-        // searchedInvoiceMapSub.unsubscribe();
         incompleteInvoiceSub.unsubscribe();
         onHoldSubscribtion.unsubscribe();
         tabSubscribtion.unsubscribe();
@@ -101,7 +88,7 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, ra
         selectedCategorySubscription.unsubscribe();
         searchSubscription.unsubscribe();
         selectedInvoiceSub.unsubscribe();
-        // selectedTabSub.unsubscribe();
+        customersSub.unsubscribe();
     })
 
     $scope.setTab = tab => {
@@ -274,7 +261,6 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, ra
                     let response = await sellFactory.checkout($scope.invoice);
                     if (response == 'success') {
                         if ($scope.selectedInvoiceTab) {
-                            // $scope.$digest($scope.deleteInvoice($scope.selectedInvoiceTab - 1));
                             $scope.$digest($scope.invoicesOnHold.splice(($scope.selectedInvoiceTab - 1), 1));
                             $scope.$digest(sellFactory.clearInvoice());
                         }

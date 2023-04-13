@@ -96,7 +96,7 @@ app.factory('stockFactory', function ($http, NotificationService) {
             data: data
         }).then(response => {
             NotificationService.showSuccess();
-            let values = model.categories._value;
+            let values = model.categories.value;
             let index = values.findIndex(x => x.category_ID == response.data.category_ID);
             values[index] = response.data;
             model.categories.next(values)

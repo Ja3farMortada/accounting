@@ -150,7 +150,8 @@ app.factory('sellFactory', function ($http, NotificationService, rateFactory, eu
     }
 
     model.completeInvoice = invoice => {
-        $http.post(`${url}/completeInvoice`, invoice).then(response => {
+        let datetime = `${DateService.getDate()} ${DateService.getTime()}`
+        $http.post(`${url}/completeInvoice`, [invoice, datetime]).then(response => {
             NotificationService.showSuccess();
             model.fetchIncompleteInvoice();
             model.selectedInvoice.next(null);

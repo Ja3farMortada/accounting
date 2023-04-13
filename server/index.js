@@ -41,6 +41,7 @@ const upload = multer({ //multer settings
 const loginRoutes = require('./routes/login.routes');
 
 const sellRoutes = require('./routes/sell.routes');
+const returnRoutes = require('./routes/return.routes');
 const stockRoutes = require('./routes/stock.routes');
 const historyRoutes = require('./routes/history.routes');
 const debtsRoutes = require('./routes/debts.routes');
@@ -54,6 +55,7 @@ const customersRoutes = require('./routes/customers.routes');
 loginRoutes(app, db);
 
 sellRoutes(app, db);
+returnRoutes(app, db);
 stockRoutes(app, db, upload, fs, path);
 historyRoutes(app, db);
 debtsRoutes(app, db);

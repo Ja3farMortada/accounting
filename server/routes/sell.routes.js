@@ -201,15 +201,15 @@ module.exports = (app, db) => {
 
     // complete invoice
     app.post('/completeInvoice', async (req, res) => {
-        let invoice_ID = req.body.invoice_ID;
-        let query = `UPDATE invoice SET invoice_isCompleted = 1 WHERE invoice_ID = ?`;
+        let invoice_ID = req.body[0].invoice_ID;
+        let edited_datetime = req.body[1];
+        let query = `UPDATE invoice SET invoice_isCompleted = 1, edited_datetime = ? WHERE invoice_ID = ?`;
         try {
-            await db.query(query, invoice_ID);
+            await db.query(query, [edited_datetime, invoice_ID]);
             res.send('success');
         } catch (error) {
             res.status(500).send(error);
         }
-
     })
 
 

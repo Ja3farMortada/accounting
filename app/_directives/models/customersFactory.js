@@ -4,11 +4,12 @@ app.factory('customersFactory', function ($http, NotificationService) {
     const url = `http://localhost:3000`;
 
     var model = {};
-    model.customers = [];
+    model.customers = new BehaviorSubject([]);
 
     const getCustomers = () => {
         return $http.get(`${url}/getCustomers`).then(response => {
-            angular.copy(response.data, model.customers);
+            // angular.copy(response.data, model.customers);
+            model.customers.next(response.data);
         }, error => {
             NotificationService.showError(error);
         });
@@ -17,7 +18,8 @@ app.factory('customersFactory', function ($http, NotificationService) {
 
     model.fetchCustomers = () => {
         return $http.get(`${url}/getCustomers`).then(response => {
-            angular.copy(response.data, model.customers);
+            // angular.copy(response.data, model.customers);
+            model.customers.next(response.data);
         }, error => {
             NotificationService.showError(error);
         });
@@ -25,9 +27,11 @@ app.factory('customersFactory', function ($http, NotificationService) {
 
     model.addCustomer = data => {
         return $http.post(`${url}/addCustomer`, data).then(response => {
-            model.customers.push(response.data);
+            let updatedCustomers = model.customers.value;
+            updatedCustomers.push(response.data);
+            model.customers.next(updatedCustomers);
             NotificationService.showSuccess();
-            return response.data;
+            return updatedCustomers;
         }, function (err) {
             NotificationService.showError(err);
         })
@@ -35,8 +39,11 @@ app.factory('customersFactory', function ($http, NotificationService) {
 
     model.updateCustomer = data => {
         return $http.post(`${url}/updateCustomer`, data).then(response => {
-            let index = model.customers.findIndex(x => x.customer_ID == data.customer_ID);
-            model.customers[index] = response.data;
+            // model.customers[index] = response.data;
+            let value = model.customers.value;
+            let index = value.findIndex(x => x.customer_ID == data.customer_ID);
+            value[index] = response.data;
+            model.customers.next(value);
             NotificationService.showSuccess();
             return response.data;
         }, error => {
@@ -50,8 +57,10 @@ app.factory('customersFactory', function ($http, NotificationService) {
             if (ok.isConfirmed) {
                 $http.post(`${url}/deleteCustomer`, data).then(response => {
                     if (response.data == 'deleted') {
-                        let index = model.customers.findIndex(x => x.customer_ID == data.customer_ID);
-                        model.customers.splice(index, 1);
+                        let value = model.customers.value;
+                        let index = value.findIndex(x => x.customer_ID == data.customer_ID);
+                        value.splice(index, 1);
+                        model.customers.next(value)
                         NotificationService.showSuccess();
                     }
                 }, error => {

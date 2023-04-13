@@ -236,3 +236,17 @@ input::-webkit-inner-spin-button {
 .form-check-label {
     cursor: pointer;
 }
+
+
+.offcanvas-size-xl {
+    --bs-offcanvas-width: min(95vw, 60%) !important;
+}
+.offcanvas-size-xxl {
+    --bs-offcanvas-width: min(95vw, 90vw) !important;
+}
+.offcanvas-size-md { /* add Responsivenes to default offcanvas */
+    --bs-offcanvas-width: min(95vw, 400px) !important;
+}
+.offcanvas-size-sm {
+    --bs-offcanvas-width: min(95vw, 250px) !important;
+}

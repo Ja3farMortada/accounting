@@ -1,3 +1,117 @@
+<div class="bg-light">
+    <div class="container-fluid pt-3 pb-3 row">
+        <div ng-show="!selectedCustomer" class="col-3">
+            <button class="btn btn-primary" ng-click="openCustomerModal()"><i class="fas fa-user"></i> Choose
+                Customer</button>
+        </div>
+
+        <div ng-show="selectedCustomer" class="col-4 d-flex align-items-center">
+            <button ng-click="clearSelectedCustomer()" class="btn btn-outline-danger"><i
+                    class="fas fa-times fa-lg"></i></button>
+            <button ng-click="openArchiveOffcanvas()" class="btn btn-outline-dark mx-3"><i class="fas fa-history"></i>
+                Archive</button>
+            <h5 class="m-0">{{ selectedCustomer.customer_name }}</h5>
+        </div>
+    </div>
+</div>
+<hr class="mt-0">
 <div class="container-fluid">
     test
+</div>
+
+<!-- choose customer Modal -->
+<div class="modal fade" id="customersModal" tabindex="-1">
+    <div class="modal-dialog modal-lgs">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">Choose Customer</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form ng-submit="submitCustomerModal()">
+                <div class="modal-body">
+                    <select id="customer_select" class="form-select" ng-model="selectedCustomerID">
+                        <option value="">Select Customer:</option>
+                        <option ng-repeat="data in customers" value="{{ data.customer_ID }}">{{ data.customer_name }}
+                        </option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times"></i>
+                        Close</button>
+                    <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- archive offcanvas -->
+<div class="offcanvas offcanvas-end offcanvas-size-xl" tabindex="-1" id="archiveOffcanvas">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title">{{ selectedCustomer.customer_name }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body">
+        <div class="card">
+            <div class="card-body p-0">
+                <table class="table table-hover text-center table-sm">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                    <input type="search" class="form-control form-control-sm"
+                                        placeholder="Description ..." ng-model="recentSearch.item_description"
+                                        spellcheck="false">
+                                </div>
+                            </th>
+                            <th>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-calendar"></i></span>
+                                    <input type="search" class="form-control form-control-sm"
+                                        placeholder="Show All Dates" id="recentDatepicker"
+                                        ng-model="recentSearch.record_date">
+                                </div>
+                            </th>
+                            <th colspan="4"></th>
+                        </tr>
+                        <tr>
+                            <th>#</th>
+                            <th>Description</th>
+                            <th>Datetime</th>
+                            <th>Unit Price</th>
+                            <th>Qty</th>
+                            <th>Total</th>
+                            <th>Select</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr dir-paginate="data in recentItems | filter:recentSearch:strict | itemsPerPage:5" pagination-id="returnTable">
+                            <td>{{ data.invoice_ID_FK }}</td>
+                            <td>{{ data.item_description }}</td>
+                            <td>{{ data.record_date }}</td>
+                            <td>{{ data.unit_price.toLocaleString() }} $</td>
+                            <td>{{ data.qty }}</td>
+                            <td>{{ (data.unit_price * data.qty).toLocaleString() }} $</td>
+                            <td class="danger-hover text-danger"><i class="fas fa-reply"></i></td>
+                        </tr>
+
+                        <tr ng-if="recentItems.length == 0">
+                            <td colspan="7">There are no data available yet!</td>
+                        </tr>
+
+                        <tr ng-if="(recentItems | filter: recentSearch).length == 0 && recentSearch">
+                            <td colspan="7">No Matching Records Found!</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer">
+                <dir-pagination-controls pagination-id="returnTable" max-size="6" direction-links="true"
+                    boundary-links="false" template-url="templates/dirPagination.tpl.html">
+                </dir-pagination-controls>
+            </div>
+        </div>
+    </div>
 </div>

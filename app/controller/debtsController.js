@@ -2,6 +2,7 @@ app.controller('debtsController', function ($scope, debtsFactory, customersFacto
 
     let rateSubscription;
     let euroSubscription;
+    let customersSub;
     $scope.$on('$viewContentLoaded', () => {
         rateSubscription = rateFactory.exchangeRate.subscribe(res => {
             $scope.exchangeRate = res;
@@ -9,8 +10,10 @@ app.controller('debtsController', function ($scope, debtsFactory, customersFacto
         euroSubscription = euroFactory.euroRate.subscribe(res => {
             $scope.euroRate = res;
         })
+        customersSub = customersFactory.customers.subscribe(res => {
+            $scope.customers = res;
+        })
 
-        $scope.customers = customersFactory.customers;
         $scope.selectedCustomer = debtsFactory.selectedCustomer;
         $scope.selectedCustomerHistory = debtsFactory.selectedCustomerHistory;
         $scope.searchCustomer = debtsFactory.searchCustomer;
@@ -22,6 +25,7 @@ app.controller('debtsController', function ($scope, debtsFactory, customersFacto
     $scope.$on('$destroy', () => {
         rateSubscription.unsubscribe();
         euroSubscription.unsubscribe();
+        customersSub.unsubscribe();
     })
 
 

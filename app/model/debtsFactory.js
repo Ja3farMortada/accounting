@@ -10,6 +10,10 @@ app.factory('debtsFactory', function ($http, NotificationService, customersFacto
         customer_name: ''
     }
 
+    customersFactory.customers.subscribe(res => {
+        model.customers = res;
+    })
+
     model.getCustomerHistory = customer => {
         return $http.get(`${url}/getCustomerHistory/${customer.customer_ID}`).then(response => {
             model.selectedCustomer = customer;
@@ -23,8 +27,8 @@ app.factory('debtsFactory', function ($http, NotificationService, customersFacto
     // add payment
     model.addPayment = data => {
         return $http.post(`${url}/addPayment`, data).then(response => {
-            let index = customersFactory.customers.findIndex(x => x.customer_ID == data.customer_ID_FK);
-            customersFactory.customers[index] = response.data;
+            let index = model.customers.findIndex(x => x.customer_ID == data.customer_ID_FK);
+            model.customers[index] = response.data;
             // fetch customer history
             model.getCustomerHistory(response.data);
             historyFactory.fetchPaymentsHistory(historyFactory.datePickerValue);
