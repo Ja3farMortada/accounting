@@ -161,6 +161,7 @@ app.directive('accountSettings', function (accountFactory, mainFactory, Notifica
                 user.viewReports = user.viewReports == 1 ? true : false;
                 user.deleteInvoice = user.deleteInvoice == 1 ? true : false;
                 user.modifyCustomers = user.modifyCustomers == 1 ? true : false;
+                user.modifySuppliers = user.modifySuppliers == 1 ? true : false;
                 angular.copy(user, scope.selectedUser);
                 $('#permissionsModal').modal('show');
             };

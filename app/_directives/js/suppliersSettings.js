@@ -1,14 +1,14 @@
-app.directive('customersSettings', function (customersFactory, mainFactory) {
+app.directive('suppliersSettings', function (suppliersFactory, mainFactory) {
     return {
         restrict: 'E',
-        templateUrl: '_directives/templates/customersSettings.html',
+        templateUrl: '_directives/templates/suppliersSettings.html',
         scope: {
 
         },
         link: function (scope) {
 
-            customersFactory.customers.subscribe(res => {
-                scope.customers = res;
+            suppliersFactory.suppliers.subscribe(res => {
+                scope.suppliers = res;
             })
 
             let userSubscription;
@@ -17,9 +17,9 @@ app.directive('customersSettings', function (customersFactory, mainFactory) {
             })
 
             // let offCanvasEl = document.getElementById('offcanvasBottom')
-            const offCanvas = new bootstrap.Offcanvas(document.getElementById('customerOffCanvas'));
+            const offCanvas = new bootstrap.Offcanvas(document.getElementById('supplierOffCanvas'));
 
-            $('#customerOffCanvas').on('shown.bs.offcanvas', event => {
+            $('#supplierOffCanvas').on('shown.bs.offcanvas', event => {
                 $('#nameInput').trigger('focus');
             })
 
@@ -41,21 +41,21 @@ app.directive('customersSettings', function (customersFactory, mainFactory) {
             scope.submit = () => {
                 switch (modalType) {
                     case 'add':
-                        customersFactory.addCustomer(scope.modalData).then(response => {
+                        suppliersFactory.addSupplier(scope.modalData).then(response => {
                             if (response) {
                                 scope.modalData = {
-                                    customer_name: null,
-                                    customer_phone: null,
-                                    customer_address: null,
+                                    supplier_name: null,
+                                    supplier_phone: null,
+                                    supplier_address: null,
                                     dollar_debt: null,
-                                    customer_notes: null
+                                    supplier_notes: null
                                 }
                                 $('#nameInput').trigger('focus')
                             }
                         })
                         break;
                     case 'edit':
-                        customersFactory.updateCustomer(scope.modalData).then(response => {
+                        suppliersFactory.updateSupplier(scope.modalData).then(response => {
                             if (response) {
                                 offCanvas.hide()
                             }
@@ -66,8 +66,8 @@ app.directive('customersSettings', function (customersFactory, mainFactory) {
             }
 
             // Delete service
-            scope.deleteCustomer = data => {
-                customersFactory.deleteCustomer(data);
+            scope.deleteSupplier = data => {
+                suppliersFactory.deleteSupplier(data);
             }
         }
     }

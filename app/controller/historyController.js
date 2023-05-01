@@ -35,7 +35,8 @@ app.controller('historyController', function ($scope, historyFactory, rateFactor
 
     // watch for invoices change to calculate total 
     $scope.$watch('salesInvoices', function () {
-        $scope.totalSales = historyFactory.totalSales()
+        $scope.totalSales = historyFactory.totalSales().sale
+        $scope.totalReturn = historyFactory.totalSales().return
     }, true)
 
     // payments

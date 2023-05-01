@@ -31,6 +31,11 @@ app.config(function ($routeProvider) {
             controller: 'debtsController'
         })
 
+        .when('/supply', {
+            templateUrl: 'view/supply.html',
+            controller: 'supplyController'
+        })
+
         .when('/settings', {
             templateUrl: 'view/settings.html',
             controller: 'settingsController'

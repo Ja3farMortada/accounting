@@ -63,7 +63,7 @@ app.controller('debtsController', function ($scope, debtsFactory, customersFacto
             modalType = 'add';
             $scope.modalData = {
                 customer_ID_FK: $scope.selectedCustomer.customer_ID,
-                payment_account: null,
+                payment_account: 'dollar',
                 payment_currency: false,
                 payment_value: null,
                 actual_payment_value: null,

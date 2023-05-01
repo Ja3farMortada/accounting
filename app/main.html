@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Salameh Cell</title>
+    <title>Accounting POS</title>
 
     <!-- Load Stylesheets CSS -->
     <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
@@ -46,7 +46,7 @@
 
     <nav class="navbar navbar-expand-lg bg-black">
         <div class="container-fluid">
-            <a class="navbar-brand"><i class="fas fa-cash-register fa-lg"></i></a>
+            <a class="navbar-brand"><i class="fas fa-shopping-cart fa-lg"></i></a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarSupportedContent">
                 <span class="navbar-toggler-icon"></span>
@@ -55,10 +55,14 @@
                 <ul class="navbar-nav mb-2 mb-lg-0">
                     <li class="nav-item">
                         <a ng-class="{'active': tabSelected == '/sell'}" class="nav-link" href="#!/sell"><i
-                                class="fas fa-shopping-cart"></i> Sell</a>
+                                class="fas fa-cash-register"></i> Sell</a>
                     </li>
                     <li class="nav-item">
-                        <a ng-class="{'active': tabSelected == '/return'}" class="nav-link" href="#!/return"><i class="fas fa-arrow-rotate-left"></i> Return</a>
+                        <a ng-class="{'active': tabSelected == '/return'}" class="nav-link" href="#!/return"><i
+                                class="fas fa-arrow-rotate-left"></i> Return</a>
+                    </li>
+                    <li class="nav-item">
+                        <a ng-class="{'active': tabSelected == '/supply'}" class="nav-link" href="#!/supply"><i class="fas fa-user-group"></i> Supply</a>
                     </li>
                     <li ng-if="loggedInUser.viewStock == 1" class="nav-item">
                         <a ng-class="{'active': tabSelected == '/stock'}" class="nav-link" href="#!/stock"><i
@@ -68,9 +72,6 @@
                         <a ng-class="{'active': tabSelected == '/history'}" class="nav-link" href="#!/history"><i
                                 class="fas fa-history"></i> History</a>
                     </li>
-                    <!-- <li class="nav-item">
-                        <a class="nav-link" href="#!/customers"><i class="fas fa-users"></i> Customers</a>
-                    </li> -->
                     <li class="nav-item">
                         <a ng-class="{'active': tabSelected == '/debts'}" class="nav-link" href="#!/debts"><i
                                 class="fas fa-users"></i> Debts</a>
@@ -194,6 +195,7 @@
 
 <!-- Load Controllers -->
 <script src="controller/sellController.js"></script>
+<script src="controller/supplyController.js"></script>
 <script src="controller/returnController.js"></script>
 <script src="controller/stockController.js"></script>
 <script src="controller/historyController.js"></script>
@@ -202,6 +204,7 @@
 
 <!-- Load Models -->
 <script src="model/sellFactory.js"></script>
+<script src="model/supplyFactory.js"></script>
 <script src="model/returnFactory.js"></script>
 <script src="model/stockFactory.js"></script>
 <script src="model/historyFactory.js"></script>
@@ -214,16 +217,16 @@
 <script src="_directives/js/stockSettings.js"></script>
 <script src="_directives/js/rateSettings.js"></script>
 <script src="_directives/js/euroSettings.js"></script>
-<!-- <script src="_directives/js/vouchersSettings.js"></script> -->
 <script src="_directives/js/customersSettings.js"></script>
+<script src="_directives/js/suppliersSettings.js"></script>
 
 <!-- Load Directive's Models -->
 <script src="_directives/models/accountFactory.js"></script>
 <script src="_directives/models/generalFactory.js"></script>
 <script src="_directives/models/rateFactory.js"></script>
 <script src="_directives/models/euroFactory.js"></script>
-<!-- <script src="_directives/models/vouchersFactory.js"></script> -->
 <script src="_directives/models/customersFactory.js"></script>
+<script src="_directives/models/suppliersFactory.js"></script>
 
 <script src="../node_modules/sortablejs/Sortable.min.js"></script>
 <script src="../node_modules/angular-legacy-sortablejs-maintained/angular-legacy-sortable.js"></script>

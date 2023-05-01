@@ -1,37 +1,41 @@
 <div class="container-fluid">
 
     <div class="row d-flex align-items-center mt-3">
-        <div class="col-4">
+        <div class="col-3">
             <div class="card border-left-info">
-                <div class="card-body">
-                    <div class="row d-flex align-items-center justify-content-center g-2">
+                <div class="card-body ps-1 pe-1">
+                    <div class="row d-flex align-items-center justify-content-center g-1">
                         <label class="col-auto" for="invoiceDatePicker">Date:</label>
                         <div class="col-auto">
-                            <input type="text" class="form-control form-control-lg text-center" id="invoiceDatePicker">
+                            <input type="text" class="form-control form-control-sm text-center" id="invoiceDatePicker">
                         </div>
                         <div class="col-auto">
-                            <button class="btn btn-info btn-lg" ng-click="today()">today</button>
+                            <button class="btn btn-info btn-sm" ng-click="today()">today</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-4">
-            <div class="card border-left-dark">
+        <div class="col-3">
+            <div class="card border-left-primary">
                 <div class="card-body">
-                    <!-- <div class="float-start">
-                        <p class="m-0">Payments: {{ totalPaymentsLira.toLocaleString() }} L.L</p>
-                        <p class="m-0">Sales: {{ totalSales.toLocaleString() }} L.L</p>
-                    </div> -->
-                    <h3 class="text-center text-dark m-0">{{ (totalSales + totalPaymentsLira).toLocaleString() }} L.L
-                    </h3>
+                    <h4 class="text-center text-primary m-0">Sales: {{ (totalSales).toLocaleString() }} $
+                    </h4>
                 </div>
             </div>
         </div>
-        <div class="col-4">
+        <div class="col-3">
+            <div class="card border-left-warning">
+                <div class="card-body">
+                    <h4 class="text-center text-warning m-0">Returns: {{ (totalReturn).toLocaleString() }} $
+                    </h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-3">
             <div class="card border-left-success">
                 <div class="card-body">
-                    <h3 class="text-center text-success m-0">{{ totalPaymentsDollar.toLocaleString() }} $</h3>
+                    <h4 class="text-center text-success m-0">Payments: {{ totalPaymentsDollar.toLocaleString() }} $</h4>
                 </div>
             </div>
         </div>
@@ -42,7 +46,7 @@
     <ul class="nav nav-tabs nav-fills d-flex justify-content-center">
         <li class="nav-item">
             <a ng-class="{'active': selectedTab == 'sales'}" class="nav-link history-link" ng-click="setTab('sales')"><i
-                    class="fas fa-receipt fa-lg"></i> SALES</a>
+                    class="fas fa-receipt fa-lg"></i> INVOICES</a>
         </li>
         <li class="nav-item">
             <a ng-class="{'active': selectedTab == 'payments'}" class="nav-link history-link"
@@ -74,7 +78,7 @@
                                 <td>{{ invoice.invoice_ID }}</td>
                                 <td>{{ invoice.customer_name || ' --- ' }}</td>
                                 <td>
-                                    <span ng-class="{'badge bg-danger': invoice.invoice_type == 'Debt', 'badge bg-primary': invoice.invoice_type == 'Sale'}">
+                                    <span class="badge" ng-class="{'bg-danger': invoice.invoice_type == 'Debt', 'bg-primary': invoice.invoice_type == 'Sale', 'bg-warning text-dark': invoice.invoice_type == 'Return'}">
                                         {{ invoice.invoice_type }}
                                     </span>
                                 </td>

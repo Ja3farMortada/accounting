@@ -69,8 +69,14 @@ app.factory('historyFactory', function($http, NotificationService, DateService) 
     // calculate total sales
     model.totalSales = function () {
         return this.salesInvoices.reduce(function (memo, invoice) {
-            return invoice.invoice_type == 'Sale' ? invoice.total_price + memo : memo
-        }, 0)
+            return {
+                sale: invoice.invoice_type == 'Sale' ? invoice.total_price + memo.sale : memo.sale,
+                return: invoice.invoice_type == 'Return' ? invoice.total_price + memo.return : memo.return,
+            }
+        }, {
+            sale: 0,
+            return: 0
+        })
     }
 
     // calculate total payments

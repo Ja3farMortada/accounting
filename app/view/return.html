@@ -16,7 +16,102 @@
 </div>
 <hr class="mt-0">
 <div class="container-fluid">
-    test
+    <div class="card">
+        <div class="card-header">
+            <!-- total price -->
+            <div class="col-auto text-end">
+                <h4 class="text-primary m-0">
+                    Total: {{ totalPrice.toLocaleString() }}$
+                </h4>
+                <!-- <span>{{ round(totalPrice * exchangeRate.rate_value).toLocaleString() }} L.L</span> -->
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-sm text-center">
+                <thead>
+                    <tr>
+                        <th width="15%">Barcode</th>
+                        <th width="35%">Description</th>
+                        <!-- <th width="10%">Discount</th> -->
+                        <th width="15%">Unit Price</th>
+                        <th width="5%">Qty</th>
+                        <th width="15%">Total Price</th>
+                        <th colspan="3" width="15%">Options</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="data in returnInvoice">
+                        <td class="p-1">{{ data.barcode || ' --- ' }}</td>
+                        <td class="p-1">{{ data.item_description }}</td>
+                        <!-- <td class="p-1">{{ data.discount }}%</td> -->
+
+                        <!-- unit price -->
+                        <td class="p-1">{{ data.discounted_price.toLocaleString() }}$</td>
+
+                        <!-- qty input -->
+                        <td class="p-1">{{ data.qty }}</td>
+
+                        <!-- total -->
+                        <td class="p-1">
+                            {{ (data.discounted_price * data.qty).toLocaleString() }}$</td>
+
+                        <!-- <td width="4%" ng-click="openPercentageModal($index)" class="info-hover text-info p-1">
+                            <i class="fas fa-percentage"></i></td> -->
+
+                        <!-- edit price on the go -->
+                        <td width="5%" ng-click="openPriceModal($index)" class="info-hover text-info p-1"><i
+                                class="fas fa-dollar"></i></td>
+
+                        </td>
+                        <!-- substract item -->
+                        <td width="5%" ng-click="substractQty($index)" class="danger-hover text-danger p-1"><i
+                                class="fas fa-minus fa-lg"></i></td>
+
+                        <!-- add item -->
+                        <td width="5%" ng-click="addQty($index)" class="success-hover text-success p-1"><i
+                                class="fas fa-plus"></i>
+                        </td>
+
+                    </tr>
+
+                    <tr ng-if="returnInvoice.length == 0" class="table-active">
+                        <td colspan="10">No Items Selected Yet!</td>
+                    </tr>
+
+                    <tr>
+                        <!-- Barcode Input -->
+                        <td>
+                            <form ng-submit="submitBarcode()">
+                                <input type="text" spellcheck="false"
+                                    class="form-control form-control-sm posInput" id="barcodeInput"
+                                    ng-model="barcodeInput" placeholder="focus to scan barcode ...">
+                            </form>
+                        </td>
+
+                        <!-- name input -->
+                        <td>
+                            <form ng-submit="submitName()">
+                                <input list="itemsList" type="search"
+                                    class="form-control form-control-sm posInput" id="nameInput"
+                                    ng-model="inputName" placeholder="Search no barcoded items ..."
+                                    spellcheck="false">
+                                <datalist id="itemsList">
+                                    <option value="{{ data.item_description }}" ng-repeat="data in items">
+                                        {{ data.item_ID }}</option>
+                                </datalist>
+                            </form>
+                        </td>
+                        <td colspan="8"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- footer -->
+        <div class="card-footer" ng-show="returnInvoice.length > 0">
+            <button class="btn btn-warning" ng-click="checkout()"><i class="fas fa-check"></i> Complete</button>
+            <button class="btn btn-dark"><i class="fas fa-print"></i> Print</button>
+        </div>
+    </div>
 </div>
 
 <!-- choose customer Modal -->
@@ -87,14 +182,15 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr dir-paginate="data in recentItems | filter:recentSearch:strict | itemsPerPage:5" pagination-id="returnTable">
+                        <tr dir-paginate="data in recentItems | filter:recentSearch:strict | itemsPerPage:5"
+                            pagination-id="returnTable">
                             <td>{{ data.invoice_ID_FK }}</td>
                             <td>{{ data.item_description }}</td>
                             <td>{{ data.record_date }}</td>
                             <td>{{ data.unit_price.toLocaleString() }} $</td>
                             <td>{{ data.qty }}</td>
                             <td>{{ (data.unit_price * data.qty).toLocaleString() }} $</td>
-                            <td class="danger-hover text-danger"><i class="fas fa-reply"></i></td>
+                            <td ng-click="addToInvoice(data)" class="danger-hover text-danger"><i class="fas fa-reply"></i></td>
                         </tr>
 
                         <tr ng-if="recentItems.length == 0">
@@ -112,6 +208,43 @@
                     boundary-links="false" template-url="templates/dirPagination.tpl.html">
                 </dir-pagination-controls>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit price modal -->
+<div class="modal fade" id="priceModal" tabindex="-1">
+    <div class="modal-dialog modal-lgs">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">Edit Price</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form ng-submit="submitNewValue()">
+                <div class="modal-body">
+                    <div class="row text-center">
+                        <div class="col-12">
+                            <label>Selected Item Price</label>
+                            <br>
+                            <label>{{ dataToEdit.unit_price.toLocaleString() }}$
+                                <!-- <span class="text-danger"
+                                    ng-if="dataToEdit.currency == 'euro'">({{ dataToEdit.original_price.toLocaleString() }}€)
+                                </span> -->
+                            </label>
+                        </div>
+                    </div>
+
+                    <br>
+                    <label>New Value</label>
+                    <input type="number" step="0.01" class="form-control" ng-model="priceModalData.newValue"
+                        id="newValue" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times"></i>
+                        Close</button>
+                    <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Submit</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

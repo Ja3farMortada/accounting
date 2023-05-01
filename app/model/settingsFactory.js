@@ -20,12 +20,12 @@ app.factory('settingsFactory', function () {
                     this.tabSelected = 'Stock';
                     break;
 
-                case 'Vouchers':
-                    this.tabSelected = 'Vouchers';
-                    break;
-
                 case 'Customers':
                     this.tabSelected = 'Customers';
+                    break;
+
+                case 'Suppliers':
+                    this.tabSelected = 'Suppliers';
                     break;
             };
         }

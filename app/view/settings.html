@@ -24,16 +24,16 @@
                 class="list-group-item list-group-item-action d-flex h5 mb-0"><span
                     class="badge bg-danger badge-fa me-4 d-flex align-items-center justify-content-center"><i
                         class="fas fa-boxes fa-lg"></i></span>Stock</a>
-            <!-- Vouchers -->
-            <!-- <a href="" ng-click="selectTab('Vouchers')" ng-class="{'active': tabSelected === 'Vouchers'}"
-                class="list-group-item list-group-item-action d-flex h5 mb-0"><span
-                    class="badge bg-info badge-fa me-4 d-flex align-items-center justify-content-center"><i
-                        class="fas fa-money-check"></i></span>Vouchers</a> -->
             <!-- Customers -->
             <a href="" ng-click="selectTab('Customers')" ng-class="{'active': tabSelected === 'Customers'}"
                 class="list-group-item list-group-item-action d-flex h5 mb-0"><span
                     class="badge bg-success badge-fa me-4 d-flex align-items-center justify-content-center"><i
                         class="fas fa-users"></i></span>Customers</a>
+            <!-- Suppliers -->
+            <a href="" ng-click="selectTab('Suppliers')" ng-class="{'active': tabSelected === 'Suppliers'}"
+                class="list-group-item list-group-item-action d-flex h5 mb-0"><span
+                    class="badge bg-info badge-fa me-4 d-flex align-items-center justify-content-center"><i
+                        class="fas fa-money-check"></i></span>Suppliers</a>
         </ul>
     </div>
     <div class="col-10">
@@ -60,12 +60,11 @@
                 </div>
             </div>
 
-            <!-- Vouchers Settings Directive -->
-            <!-- <vouchers-settings ng-if="tabSelected === 'Vouchers'"></vouchers-settings> -->
-
             <!-- Customers Settings Directive -->
             <customers-settings ng-if="tabSelected === 'Customers'"></customers-settings>
-
+            
+            <!-- Suppliers Settings Directive -->
+            <suppliers-settings ng-if="tabSelected === 'Suppliers'"></suppliers-settings>
         </div>
     </div>
 </div>

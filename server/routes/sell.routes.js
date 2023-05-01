@@ -8,7 +8,7 @@ module.exports = (app, db) => {
         INNER JOIN invoice_map AS M ON I.invoice_ID = M.invoice_ID_FK
         INNER JOIN stock AS S ON S.item_ID = M.item_ID_FK
         INNER JOIN users AS U ON I.user_ID_FK = U.user_ID
-        LEFT JOIN customers AS C ON I.customer_ID_FK = C.customer_ID
+        INNER JOIN customers AS C ON I.customer_ID_FK = C.customer_ID
         WHERE invoice_isCompleted = 0
         AND invoice_status = 1
         GROUP BY I.invoice_ID

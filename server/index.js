@@ -50,6 +50,7 @@ const settingsRoutes = require('./routes/settings.routes');
 const usersRoutes = require('./routes/users.routes');
 const vouchersRoutes = require('./routes/vouchers.routes');
 const customersRoutes = require('./routes/customers.routes');
+const suppliersRoutes = require('./routes/suppliers.routes');
 
 
 loginRoutes(app, db);
@@ -64,5 +65,6 @@ settingsRoutes(app, db, md5);
 usersRoutes(app, db, md5);
 vouchersRoutes(app, db, upload, fs, path);
 customersRoutes(app, db);
+suppliersRoutes(app, db);
 
 module.exports = app;

@@ -78,7 +78,7 @@ app.factory('sellFactory', function ($http, NotificationService, rateFactory, eu
     }
 
     // checkout
-    model.checkout = (data, type) => {
+    model.checkout = (data) => {
         let invoice = {
             user_ID_FK: JSON.parse(localStorage.getItem('setting')).user_ID,
             invoice_type: 'Sale',
@@ -92,6 +92,7 @@ app.factory('sellFactory', function ($http, NotificationService, rateFactory, eu
             invoice: invoice
         }).then(response => {
             NotificationService.showSuccess();
+            stockFactory.fetchItems();
             return 'success';
         }, error => {
             NotificationService.showErrorText(error);
@@ -116,6 +117,7 @@ app.factory('sellFactory', function ($http, NotificationService, rateFactory, eu
             model.clearInvoice();
             NotificationService.showSuccess();
             debtsFactory.getCustomerHistory(debtsFactory.selectedCustomer);
+            stockFactory.fetchItems();
             // fetch customers to update debts
             await customersFactory.fetchCustomers();
             model.fetchIncompleteInvoice();
