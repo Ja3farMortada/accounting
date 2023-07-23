@@ -4,16 +4,6 @@
         <div class="col-4 mt-3">
             <div class="card">
                 <div class="card-header pb-0">
-                    <!-- <ul class="nav nav-tabs nav-fill">
-                        <li class="nav-item">
-                            <a ng-click="setTab(1)" ng-class="{'active': selectedTab == 1}" class="nav-link"><i
-                                    class="fas fa-receipt fa-lg"></i> Opened Invoices</a>
-                        </li>
-                        <li class="nav-item">
-                            <a ng-click="setTab(2)" ng-class="{'active': selectedTab == 2}" class="nav-link"><i
-                                    class="fas fa-search fa-lg"></i> Search</a>
-                        </li>
-                    </ul> -->
                     <h5 class="text-center"><i class="fas fa-receipt"></i> Opened Invoices</h5>
                 </div>
                 <div class="card-body p-0">
@@ -60,11 +50,20 @@
                         </div>
 
                         <!-- total price -->
-                        <div class="col-auto text-end">
-                            <h4 class="text-primary m-0">
+                        <div class="col-auto">
+                            <h5 class="text-primary m-0">
                                 Total: {{ totalPrice.toLocaleString() }}$
-                            </h4>
-                            <span>{{ round(totalPrice * exchangeRate.rate_value).toLocaleString() }} L.L</span>
+                            </h5>
+                            <!-- <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="tva" ng-model="tvaSelected">
+                                <label class="form-check-label" for="tva">
+                                  T.V.A 11%
+                                </label>
+                            </div>
+                            <h4 class="text-primary m-0">
+                                Total: {{ (tvaSelected ? totalPrice * tva : totalPrice).toLocaleString() }}$
+                            </h4> -->
+                            <!-- <span>{{ round(totalPrice * exchangeRate.rate_value).toLocaleString() }} L.L</span> -->
                         </div>
                     </div>
                 </div>

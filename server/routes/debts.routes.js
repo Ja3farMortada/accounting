@@ -5,6 +5,7 @@ module.exports = (app, db) => {
         let query = `SELECT
         I.invoice_type AS type,
         I.invoice_ID,
+        I.customer_ID_FK AS customer_ID,
         DATE(edited_datetime) AS date,
         TIME(edited_datetime) AS time,
         I.total_cost AS value,
@@ -17,7 +18,8 @@ module.exports = (app, db) => {
         INNER JOIN invoice_map AS M ON I.invoice_ID = M.invoice_ID_FK
         INNER JOIN stock AS S ON S.item_ID = M.item_ID_FK
         INNER JOIN users AS U ON I.user_ID_FK = U.user_ID
-        WHERE I.customer_ID_FK = ?        
+        WHERE I.customer_ID_FK = ?
+        AND I.invoice_status = 1    
         GROUP BY I.invoice_ID
 
         UNION
@@ -25,6 +27,7 @@ module.exports = (app, db) => {
         SELECT
         'Payment',
         P.payment_ID,
+        P.customer_ID_FK,
         DATE(P.payment_datetime),
         TIME(P.payment_datetime),
         P.payment_value,

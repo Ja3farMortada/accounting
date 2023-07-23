@@ -12,6 +12,11 @@
                 Archive</button>
             <h5 class="m-0">{{ selectedCustomer.customer_name }}</h5>
         </div>
+
+        <div class="col-1 ms-auto">
+            <h3 class="mb-0">مرتجعات</h3>
+        </div>
+
     </div>
 </div>
 <hr class="mt-0">
@@ -109,7 +114,7 @@
         <!-- footer -->
         <div class="card-footer" ng-show="returnInvoice.length > 0">
             <button class="btn btn-warning" ng-click="checkout()"><i class="fas fa-check"></i> Complete</button>
-            <button class="btn btn-dark"><i class="fas fa-print"></i> Print</button>
+            <button class="btn btn-dark" ng-click="print()"><i class="fas fa-print"></i> Print</button>
         </div>
     </div>
 </div>
@@ -182,7 +187,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr dir-paginate="data in recentItems | filter:recentSearch:strict | itemsPerPage:5"
+                        <tr dir-paginate="data in recentItems | filter:recentSearch:strict | itemsPerPage:15"
                             pagination-id="returnTable">
                             <td>{{ data.invoice_ID_FK }}</td>
                             <td>{{ data.item_description }}</td>

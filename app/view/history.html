@@ -25,6 +25,13 @@
             </div>
         </div>
         <div class="col-3">
+            <div class="card border-left-success">
+                <div class="card-body">
+                    <h4 class="text-center text-success m-0">Payments: {{ totalPaymentsDollar.toLocaleString() }} $</h4>
+                </div>
+            </div>
+        </div>
+        <div class="col-3">
             <div class="card border-left-warning">
                 <div class="card-body">
                     <h4 class="text-center text-warning m-0">Returns: {{ (totalReturn).toLocaleString() }} $
@@ -32,13 +39,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-3">
-            <div class="card border-left-success">
-                <div class="card-body">
-                    <h4 class="text-center text-success m-0">Payments: {{ totalPaymentsDollar.toLocaleString() }} $</h4>
-                </div>
-            </div>
-        </div>
+        
     </div>
 
     <br>
@@ -117,10 +118,10 @@
                                             <span class="h6">User: {{ user }}</span>
                                         </div>
                                         <div class="col-4">
-                                            <button disabled class="btn btn-outline-dark btn-sm"
-                                                ng-click="openPrintModal()"><i class="fas fa-print"></i>
+                                            <button class="btn btn-outline-dark btn-sm"
+                                                ng-click="print()"><i class="fas fa-print"></i>
                                                 Print</button>
-                                            <button disabled ng-if="loggedInUser.type ==='admin'"
+                                            <button ng-if="loggedInUser.deleteInvoice"
                                                 class="btn btn-outline-danger btn-sm" ng-click="deleteInvoice()"><i
                                                     class="fas fa-trash-alt"></i> Delete</button>
                                         </div>
@@ -186,6 +187,7 @@
                             <th>Customer Name</th>
                             <th>Amount</th>
                             <th>Notes</th>
+                            <th>Options</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -206,10 +208,15 @@
                                 </span>
                             </td>
                             <td ng-if="data.payment_value == data.actual_payment_value"> --- </td>
+
+
+                            <td ng-click="deletePayment(data)" class="danger-hover text-danger" ng-if="loggedInUser.deleteInvoice">
+                                <i class="fas fa-trash-alt"></i>
+                            </td>
                         </tr>
 
                         <tr ng-if="paymentsHistory.length == 0">
-                            <td colspan="5">There are no payments yet!</td>
+                            <td colspan="6">There are no payments yet!</td>
                         </tr>
                     </tbody>
                 </table>

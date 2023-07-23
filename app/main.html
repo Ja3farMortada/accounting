@@ -76,6 +76,10 @@
                         <a ng-class="{'active': tabSelected == '/debts'}" class="nav-link" href="#!/debts"><i
                                 class="fas fa-users"></i> Debts</a>
                     </li>
+                    <li class="nav-item">
+                        <a ng-class="{'active': tabSelected == '/supplierDebts'}" href="#!/supplierDebts" class="nav-link"><i
+                            class="fas fa-user-tie"></i> Supply Debts</a>
+                    </li>
                     <li ng-if="loggedInUser.viewReports == 1" class="nav-item">
                         <a class="nav-link" href=""><i class="fas fa-chart-line fa-fw"></i> Reports</a>
                     </li>
@@ -144,7 +148,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body text-center">
-                    <h3 class="text-center">Salameh Cell</h3>
+                    <h3 class="text-center">Accounting POS</h3>
                     <h6 class="text-center">current version: {{package.version}}</h6>
 
                     <!-- text -->
@@ -200,6 +204,7 @@
 <script src="controller/stockController.js"></script>
 <script src="controller/historyController.js"></script>
 <script src="controller/debtsController.js"></script>
+<script src="controller/supplyDebtsController.js"></script>
 <script src="controller/settingsController.js"></script>
 
 <!-- Load Models -->

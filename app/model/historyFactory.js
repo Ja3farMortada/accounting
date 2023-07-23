@@ -58,6 +58,22 @@ app.factory('historyFactory', function($http, NotificationService, DateService) 
                 return $http.post(`${url}/deleteInvoice`, {data: invoice}).then(() => {
                     NotificationService.showSuccess();
                     model.fetchSalesInvoices(model.datePickerValue);
+                    
+                    
+                }, error => {
+                    NotificationService.showError(error);
+                })
+            }
+        })
+    }
+
+    // delete payment
+    model.deletePayment = payment => {
+        return NotificationService.showWarning().then(ok => {
+            if (ok.isConfirmed) {
+                return $http.post(`${url}/deletePayment`, payment).then(() => {
+                    NotificationService.showSuccess();
+                    model.fetchPaymentsHistory(model.datePickerValue);
                 }, error => {
                     NotificationService.showError(error);
                 })

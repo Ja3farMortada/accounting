@@ -1,4 +1,4 @@
-app.factory('returnFactory', function($http, NotificationService, rateFactory, euroFactory,stockFactory) {
+app.factory('returnFactory', function($http, NotificationService, rateFactory, euroFactory,stockFactory, customersFactory, debtsFactory) {
 
     let url = 'http://localhost:3000';
 
@@ -55,7 +55,8 @@ app.factory('returnFactory', function($http, NotificationService, rateFactory, e
             total_cost: model.total().totalCost,
             total_price: model.total().totalPrice,
             exchange_rate: model.exchangeRate.rate_value,
-            euro_rate: model.euroRate.rate_value
+            euro_rate: model.euroRate.rate_value,
+            invoice_isCompleted: true
         }
         return $http.post(`${url}/checkoutReturn`, {
             items: data,
@@ -63,6 +64,12 @@ app.factory('returnFactory', function($http, NotificationService, rateFactory, e
         }).then(response => {
             NotificationService.showSuccess();
             stockFactory.fetchItems();
+            // update models
+            model.selectedCustomer.next(null)
+            customersFactory.fetchCustomers()
+            console.log('called');
+            debtsFactory.getCustomerHistory(debtsFactory.selectedCustomer)
+            
             return 'success';
         }, error => {
             NotificationService.showErrorText(error);

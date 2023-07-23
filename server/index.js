@@ -42,6 +42,7 @@ const loginRoutes = require('./routes/login.routes');
 
 const sellRoutes = require('./routes/sell.routes');
 const returnRoutes = require('./routes/return.routes');
+const supplyRoutes = require('./routes/supply.routes');
 const stockRoutes = require('./routes/stock.routes');
 const historyRoutes = require('./routes/history.routes');
 const debtsRoutes = require('./routes/debts.routes');
@@ -57,6 +58,7 @@ loginRoutes(app, db);
 
 sellRoutes(app, db);
 returnRoutes(app, db);
+supplyRoutes(app, db);
 stockRoutes(app, db, upload, fs, path);
 historyRoutes(app, db);
 debtsRoutes(app, db);

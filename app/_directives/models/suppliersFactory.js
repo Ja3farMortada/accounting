@@ -5,6 +5,12 @@ app.factory('suppliersFactory', function ($http, NotificationService) {
 
     var model = {};
     model.suppliers = new BehaviorSubject([]);
+    model.selectedSupplierHistory = [];
+    model.selectedSupplier = {};
+
+    model.searchSupplier = {
+        supplier_name: ''
+    }
 
     const getSuppliers = () => {
         return $http.get(`${url}/getSuppliers`).then(response => {
@@ -67,6 +73,28 @@ app.factory('suppliersFactory', function ($http, NotificationService) {
                     NotificationService.showError(error);
                 })
             }
+        })
+    }
+
+    model.getSupplierHistory = supplier => {
+        return $http.get(`${url}/getSupplierHistory/${supplier.supplier_ID}`).then(response => {
+            model.selectedSupplier = supplier;
+            angular.copy(response.data, model.selectedSupplierHistory);
+            return;
+        }, error => {
+            NotificationService.showError(error);
+        })
+    }
+
+    // add payment
+    model.addSupplierPayment = data => {
+        return $http.post(`${url}/addSupplierPayment`, data).then(response => {
+            model.getSupplierHistory(response.data);
+            NotificationService.showSuccess();
+            model.fetchSuppliers()
+            return response.data;
+        }, error => {
+            NotificationService.showError(error);
         })
     }
 

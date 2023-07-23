@@ -1,4 +1,4 @@
-app.controller('historyController', function ($scope, historyFactory, rateFactory, euroFactory, DateService, mainFactory) {
+app.controller('historyController', function ($scope, historyFactory, rateFactory, euroFactory, DateService, mainFactory, debtsFactory, customersFactory) {
 
 
     let userSubscription;
@@ -92,16 +92,31 @@ app.controller('historyController', function ($scope, historyFactory, rateFactor
     // delete invoice
     $scope.deleteInvoice = function () {
         historyFactory.deleteInvoice($scope.selectedInvoice).then(() => {
-            $scope.items = null
+            $scope.items = null;
+            debtsFactory.getCustomerHistory(debtsFactory.selectedCustomer);
+            customersFactory.fetchCustomers();
         })
-        // NotificationService.showWarning().then(ok => {
-        //     if (ok.isConfirmed) {
-        //         historyFactory.deleteInvoice(selectedInvoice, $scope.tabSelected, $scope.datePickerValue).then(function () {
-        //             $scope.activeRow = null;
-        //             $scope.items = null
-        //         });
-        //     }
-        // });
     };
+
+    $scope.deletePayment = function (payment) {
+        console.log(payment);
+        historyFactory.deletePayment(payment).then(() => {
+            debtsFactory.getCustomerHistory(debtsFactory.selectedCustomer);
+            customersFactory.fetchCustomers();
+        })
+    }
+
+
+    // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Print Invoice %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    $scope.print = async () => {
+        let printData = {
+            type: $scope.selectedInvoice.invoice_type == 'Return' ? 'مرتجع' : '',
+            date: $scope.datePickerValue,
+            invoice: $scope.selectedInvoice.invoice_map,
+            name: $scope.selectedInvoice.customer_name || null
+        }
+        await window.electron.ipcRenderer.invoke('print-invoice', printData)
+    }
 
 })

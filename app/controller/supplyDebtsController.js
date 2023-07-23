@@ -1,42 +1,37 @@
-app.controller('debtsController', function ($scope, debtsFactory, customersFactory, rateFactory, euroFactory, mainFactory) {
+app.controller('supplierDebtsController', function ($scope, suppliersFactory, rateFactory, euroFactory) {
 
-    let userSubscription;
     let rateSubscription;
     let euroSubscription;
-    let customersSub;
+    let suppliersSub;
     $scope.$on('$viewContentLoaded', () => {
-        userSubscription = mainFactory.loggedInUser.subscribe(res => {
-            $scope.loggedInUser = res;
-        })
         rateSubscription = rateFactory.exchangeRate.subscribe(res => {
             $scope.exchangeRate = res;
         })
         euroSubscription = euroFactory.euroRate.subscribe(res => {
             $scope.euroRate = res;
         })
-        customersSub = customersFactory.customers.subscribe(res => {
-            $scope.customers = res;
+        suppliersSub = suppliersFactory.suppliers.subscribe(res => {
+            $scope.suppliers = res;
         })
 
-        $scope.selectedCustomer = debtsFactory.selectedCustomer;
-        $scope.selectedCustomerHistory = debtsFactory.selectedCustomerHistory;
-        $scope.searchCustomer = debtsFactory.searchCustomer;
+        $scope.selectedSupplier = suppliersFactory.selectedSupplier;
+        $scope.selectedSupplierHistory = suppliersFactory.selectedSupplierHistory;
+        $scope.searchSupplier = suppliersFactory.searchSupplier;
 
-        $('#searchCustomer').trigger('select');
+        $('#searchSupplier').trigger('select');
     })
 
     // on destroy controller
     $scope.$on('$destroy', () => {
-        userSubscription.unsubscribe();
         rateSubscription.unsubscribe();
         euroSubscription.unsubscribe();
-        customersSub.unsubscribe();
+        suppliersSub.unsubscribe();
     })
 
 
-    $scope.getCustomerHistory = data => {
-        debtsFactory.getCustomerHistory(data).then(() => {
-            $scope.selectedCustomer = debtsFactory.selectedCustomer;
+    $scope.getSupplierHistory = data => {
+        suppliersFactory.getSupplierHistory(data).then(() => {
+            $scope.selectedSupplier = suppliersFactory.selectedSupplier;
         })
     }
 
@@ -53,7 +48,7 @@ app.controller('debtsController', function ($scope, debtsFactory, customersFacto
                 var d = $('#transactionsDatepicker').datepicker({
                     dateFormat: 'yy-mm-dd'
                 }).val();
-                // debtsFactory.datePickerValue = d;
+                // suppliersFactory.datePickerValue = d;
                 $scope.$digest($scope.searchVal.date = d);
             }
         }).datepicker("setDate", $scope.searchVal.date);
@@ -67,7 +62,7 @@ app.controller('debtsController', function ($scope, debtsFactory, customersFacto
         if (type == 'add') {
             modalType = 'add';
             $scope.modalData = {
-                customer_ID_FK: $scope.selectedCustomer.customer_ID,
+                supplier_ID_FK: $scope.selectedSupplier.supplier_ID,
                 payment_account: 'dollar',
                 payment_currency: false,
                 payment_value: null,
@@ -87,32 +82,21 @@ app.controller('debtsController', function ($scope, debtsFactory, customersFacto
     $scope.submitPayment = () => {
         switch (modalType) {
             case 'add':
-                debtsFactory.addPayment($scope.modalData).then(res => {
+                suppliersFactory.addSupplierPayment($scope.modalData).then(res => {
                     paymentModal.hide();
                 })
                 break;
 
             case 'edit':
-                debtsFactory.editPayment($scope.modalData).then(res => {
+                suppliersFactory.editSupplierPayment($scope.modalData).then(res => {
                     paymentModal.hide();
                 })
                 break;
         }
     }
 
-    // $scope.sendWhatsapp = () => {
-    //     let data = $scope.selectedCustomer;
-    //     let nl = `%0A`;
-    //     let text = `Dear Customer${nl}Please settle your debts${nl}Your current balance is:${nl}- Fresh USD: ${data.dollar_debt.toLocaleString()}$${nl}- euro: ${data.euro_debt.toLocaleString()}$${nl}- LBP: ${data.lira_debt.toLocaleString()} L.L${nl}Salameh Cell`
-    //     window.electron.send('send-whatsapp', [data.customer_phone, text])
-    // }
-
     $scope.openDetailsModal = data => {
-        $scope.invoiceDetails = data.invoice_map;
+        $scope.invoiceDetails = JSON.parse(data.invoice_map);
         $('#detailsModal').modal('show');
-    }
-
-    $scope.deleteInvoice = invoice => {
-        console.log(invoice);
     }
 })

@@ -6,6 +6,11 @@ app.controller('sellController', function ($scope, sellFactory, stockFactory, ra
         $scope.barcodeInput = null;
     };
 
+    // V.A.T 11%
+    $scope.tva = 1.1;
+
+    $scope.tvaSelected = true
+
     // on load controller 
     let rateSubscription;
     let euroSubscription;

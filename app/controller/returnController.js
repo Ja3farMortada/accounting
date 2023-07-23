@@ -1,4 +1,4 @@
-app.controller('returnController', function ($scope, returnFactory, customersFactory, rateFactory, euroFactory, sellFactory, stockFactory, NotificationService) {
+app.controller('returnController', function ($scope, returnFactory, customersFactory, rateFactory, euroFactory, sellFactory, stockFactory, NotificationService, DateService) {
 
     // define and trigger focus on barcode input
     $scope.triggerFocus = () => {
@@ -322,5 +322,21 @@ app.controller('returnController', function ($scope, returnFactory, customersFac
         priceModal.hide();
     }
 
+
+    // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Print Invoice %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    $scope.print = async () => {
+        let customerName = null;
+        if ($scope.selectedCustomer) {
+            customerName = $scope.selectedCustomer.customer_name
+        }
+        let printData = {
+            type: 'مرتجع',
+            date: DateService.getDate(),
+            invoice: $scope.returnInvoice,
+            name: customerName
+        }
+        await window.electron.ipcRenderer.invoke('print-invoice', printData)
+    }
 
 })
