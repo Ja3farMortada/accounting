@@ -44,7 +44,6 @@ module.exports = (win, ipcMain) => {
     });
     autoUpdater.on('update-not-available', (info) => {
         console.log('infoo ' + info);
-        sendStatusToWindow('up-to-date', info);
     });
     autoUpdater.on('error', (err) => {
         sendStatusToWindow('error', err);

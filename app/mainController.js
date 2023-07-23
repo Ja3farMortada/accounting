@@ -129,6 +129,7 @@ app.controller('mainController', function ($scope, NotificationService, $rootSco
         $scope.$digest($scope.text = data);
     });
     window.electron.receive('update-available', function (event, data) {
+        console.log(data);
         $scope.$digest($scope.showSpinner = false);
         $scope.$digest($scope.download = true);
         $scope.$digest($scope.text = `version ${data.version} is available.`);
@@ -146,11 +147,7 @@ app.controller('mainController', function ($scope, NotificationService, $rootSco
         $scope.$digest($scope.text = `an error has occured!.`);
         console.log(data);
     });
-    // window.electron.test((event, data) => {
-    //     console.log(data);
-    // })
     window.electron.receive('downloading', function (event, data) {
-        console.log(data);
         $scope.$digest($scope.showSpinner = false);
         $scope.$digest($scope.download = false);
         $scope.$digest($scope.downloading = true);

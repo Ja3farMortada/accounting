@@ -15,7 +15,7 @@ contextBridge.exposeInMainWorld(
             ipcRenderer.on(channel, fn)
         },
 
-        test: (channel, fn) => ipcRenderer.on('up-to-date', channel),
+        // test: (channel, fn) => ipcRenderer.on('up-to-date', channel),
 
         print: (callback) => ipcRenderer.on('printDocument', callback),
 
