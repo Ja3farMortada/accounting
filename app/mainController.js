@@ -125,29 +125,30 @@ app.controller('mainController', function ($scope, NotificationService, $rootSco
     }
 
     // render messages from server
-    window.electron.receive('checking-for-update', function (event, data) {
+    window.electron.ipcRenderer.receive('checking-for-update', function (event, data) {
         $scope.$digest($scope.showSpinner = true);
         $scope.$digest($scope.text = data);
     });
-    window.electron.receive('update-available', function (event, data) {
+    window.electron.ipcRenderer.receive('update-available', function (event, data) {
         $scope.$digest($scope.showSpinner = false);
         $scope.$digest($scope.download = true);
         $scope.$digest($scope.text = `version ${data.version} is available.`);
     });
-    window.electron.receive('up-to-date', function (event, data) {
+    window.electron.ipcRenderer.receive('up-to-date', function (event, data) {
         $scope.$digest($scope.showSpinner = false);
         $scope.$digest($scope.checked = false);
         $scope.$digest($scope.text = `your current version is up-to-date.`);
         console.log(data);
     });
-    window.electron.receive('error', function (event, data) {
+    window.electron.ipcRenderer.receive('error', function (event, data) {
         $scope.$digest($scope.showSpinner = false);
         $scope.$digest($scope.checked = false);
         $scope.$digest($scope.download = false);
         $scope.$digest($scope.text = `an error has occured!.`);
         console.log(data);
     });
-    window.electron.receive('downloading', function (event, data) {
+    window.electron.ipcRenderer.receive('downloading', function (event, data) {
+        console.log(data);
         $scope.$digest($scope.showSpinner = false);
         $scope.$digest($scope.download = false);
         $scope.$digest($scope.downloading = true);
@@ -156,7 +157,7 @@ app.controller('mainController', function ($scope, NotificationService, $rootSco
         $('#progressBar').css("width", data.percent + "%");
         console.log(data);
     });
-    window.electron.receive('downloaded', function (event, data) {
+    window.electron.ipcRenderer.receive('downloaded', function (event, data) {
         $scope.$digest($scope.downloading = false);
         $scope.$digest($scope.downloaded = true);
         $scope.$digest($scope.download = false);
