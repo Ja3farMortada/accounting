@@ -7,6 +7,12 @@ const {
     shell
 } = require('electron')
 
+Object.defineProperty(app, 'isPackaged', {
+    get() {
+      return true;
+    }
+  });
+
 
 // Menu
 const template = require('./menu');
@@ -40,7 +46,7 @@ const getFromEnv = Number.parseInt(process.env.ELECTRON_IS_DEV, 10) === 1;
 const isDev = isEnvSet ? getFromEnv : !app.isPackaged;
 if (!isDev) {
     // require server
-    const server = require('../server');
+    const server = require('./server');
     node = server.listen(3000, () => console.log(`listening on port ${3000} ...`));
 }
 
@@ -60,38 +66,39 @@ async function createWindow() {
         original: true
     })
 
-    if (isDev) {
+    if (true) {
         win.loadFile('app/index.html')
-    } else {
-        try {
-            await db.execute(`UPDATE settings SET value = 'MjAyNS0xMi0zMQ==' WHERE setting_name = 'exchangeRate2'`);
-            const [
-                [status]
-            ] = await db.execute(`SELECT * FROM settings WHERE setting_name = 'exchangeRate3'`);
-            if (status.value == 'bG9ja2Vk') {
-                win.loadFile('error.html')
-            } else if (status.value == 'dW5sb2NrZWQ=') {
-                const [
-                    [result]
-                ] = await db.execute(`SELECT * FROM settings WHERE setting_name = 'exchangeRate2'`);
-                let date = Buffer.from(result.value, 'base64').toString('ascii');
-                let now = moment().format('yyyy-MM-DD');
-                if (date > now) {
-                    if (ID == 'd5951a97-356b-4b2b-9857-bb1b6084fda3') {
-                        win.loadFile('app/index.html')
-                    } else {
-                        win.loadFile('error.html')
-                    }
-                } else {
-                    await db.execute(`UPDATE settings SET value = 'bG9ja2Vk' WHERE setting_name = 'exchangeRate3'`)
-                    win.loadFile('error.html')
-                }
-            }
-        } catch (error) {
-            console.log(error);
-            win.loadFile('error.html')
-        }
-    }
+    } 
+    // else {
+    //     try {
+    //         await db.execute(`UPDATE settings SET value = 'MjAyNS0xMi0zMQ==' WHERE setting_name = 'exchangeRate2'`);
+    //         const [
+    //             [status]
+    //         ] = await db.execute(`SELECT * FROM settings WHERE setting_name = 'exchangeRate3'`);
+    //         if (status.value == 'bG9ja2Vk') {
+    //             win.loadFile('error.html')
+    //         } else if (status.value == 'dW5sb2NrZWQ=') {
+    //             const [
+    //                 [result]
+    //             ] = await db.execute(`SELECT * FROM settings WHERE setting_name = 'exchangeRate2'`);
+    //             let date = Buffer.from(result.value, 'base64').toString('ascii');
+    //             let now = moment().format('yyyy-MM-DD');
+    //             if (date > now) {
+    //                 if (ID == 'd5951a97-356b-4b2b-9857-bb1b6084fda3') {
+    //                     win.loadFile('app/index.html')
+    //                 } else {
+    //                     win.loadFile('error.html')
+    //                 }
+    //             } else {
+    //                 await db.execute(`UPDATE settings SET value = 'bG9ja2Vk' WHERE setting_name = 'exchangeRate3'`)
+    //                 win.loadFile('error.html')
+    //             }
+    //         }
+    //     } catch (error) {
+    //         console.log(error);
+    //         win.loadFile('error.html')
+    //     }
+    // }
 
     // require update module
     const updater = require('./update')

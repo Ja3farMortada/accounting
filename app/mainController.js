@@ -60,7 +60,7 @@ app.factory('mainFactory', function () {
     model.loggedInUser = new BehaviorSubject(user);
 
     model.getPackages = async () => {
-        let response = await window.electron.ipcRenderer.invoke('read-package');
+        let response = await window.electron.send('read-package');
         if (response) {
             return response;
         }
@@ -101,7 +101,6 @@ app.controller('mainController', function ($scope, NotificationService, $rootSco
         $scope.$digest($scope.package = response);
     });
 
-
     // Update Logic
     $scope.checked = false;
     $scope.showSpinner = false;
@@ -116,38 +115,41 @@ app.controller('mainController', function ($scope, NotificationService, $rootSco
     $scope.checkForUpdates = function () {
         $scope.checked = true;
         $scope.text = null;
-        window.electron.ipcRenderer.send('update');
+        window.electron.send('update');
     };
     $scope.downloadUpdate = function () {
         $scope.download = false;
         $scope.showSpinner = true;
-        window.electron.ipcRenderer.send('download');
+        window.electron.send('download');
     }
 
     // render messages from server
-    window.electron.ipcRenderer.receive('checking-for-update', function (event, data) {
+    window.electron.receive('checking-for-update', function (event, data) {
         $scope.$digest($scope.showSpinner = true);
         $scope.$digest($scope.text = data);
     });
-    window.electron.ipcRenderer.receive('update-available', function (event, data) {
+    window.electron.receive('update-available', function (event, data) {
         $scope.$digest($scope.showSpinner = false);
         $scope.$digest($scope.download = true);
         $scope.$digest($scope.text = `version ${data.version} is available.`);
     });
-    window.electron.ipcRenderer.receive('up-to-date', function (event, data) {
+    window.electron.receive('up-to-date', function (event, data) {
         $scope.$digest($scope.showSpinner = false);
         $scope.$digest($scope.checked = false);
         $scope.$digest($scope.text = `your current version is up-to-date.`);
         console.log(data);
     });
-    window.electron.ipcRenderer.receive('error', function (event, data) {
+    window.electron.receive('error', function (event, data) {
         $scope.$digest($scope.showSpinner = false);
         $scope.$digest($scope.checked = false);
         $scope.$digest($scope.download = false);
         $scope.$digest($scope.text = `an error has occured!.`);
         console.log(data);
     });
-    window.electron.ipcRenderer.receive('downloading', function (event, data) {
+    // window.electron.test((event, data) => {
+    //     console.log(data);
+    // })
+    window.electron.receive('downloading', function (event, data) {
         console.log(data);
         $scope.$digest($scope.showSpinner = false);
         $scope.$digest($scope.download = false);
@@ -157,7 +159,7 @@ app.controller('mainController', function ($scope, NotificationService, $rootSco
         $('#progressBar').css("width", data.percent + "%");
         console.log(data);
     });
-    window.electron.ipcRenderer.receive('downloaded', function (event, data) {
+    window.electron.receive('downloaded', function (event, data) {
         $scope.$digest($scope.downloading = false);
         $scope.$digest($scope.downloaded = true);
         $scope.$digest($scope.download = false);

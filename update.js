@@ -11,16 +11,16 @@ module.exports = (win, ipcMain) => {
 
     autoUpdater.autoDownload = false;
 
-    ipcMain.on('update', () => {
+    ipcMain.handle('update', () => {
         sendStatusToWindow('checking-for-update', 'Checking for update...');
         autoUpdater.checkForUpdates();
     });
 
-    ipcMain.on('download', () => {
+    ipcMain.handle('download', () => {
         autoUpdater.downloadUpdate();
     });
 
-    ipcMain.on('applyUpdate', () => {
+    ipcMain.handle('applyUpdate', () => {
         autoUpdater.quitAndInstall();
     });
 
@@ -28,9 +28,10 @@ module.exports = (win, ipcMain) => {
     autoUpdater.logger = log;
     autoUpdater.logger.transports.file.level = 'info';
 
-    function sendStatusToWindow(message, data) {
+    async function sendStatusToWindow(message, data) {
         if (win) {
-            win.webContents.send(message, data);
+            await win.webContents.send(message, data);
+            // win.ipcMain.send(message, data)
         }
     }
 
@@ -38,9 +39,11 @@ module.exports = (win, ipcMain) => {
         sendStatusToWindow('checking-for-update', 'Checking for update...');
     });
     autoUpdater.on('update-available', (info) => {
+        console.log('infoooo ' + info);
         sendStatusToWindow('update-available', info);
     });
     autoUpdater.on('update-not-available', (info) => {
+        console.log('infoo ' + info);
         sendStatusToWindow('up-to-date', info);
     });
     autoUpdater.on('error', (err) => {

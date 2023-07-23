@@ -67,7 +67,7 @@
     app.factory('mainFactory', function () {
         let model = {};
         model.getPackages = async () => {
-            let response = await window.electron.ipcRenderer.invoke('read-package');
+            let response = await window.electron.send('read-package');
             if (response) {
                 return response;
             }
