@@ -1,7 +1,6 @@
 const {
     contextBridge,
-    ipcRenderer,
-    webContents
+    ipcRenderer
 } = require('electron')
 
 contextBridge.exposeInMainWorld(
@@ -14,8 +13,6 @@ contextBridge.exposeInMainWorld(
         receive: (channel, fn) => {
             ipcRenderer.on(channel, fn)
         },
-
-        // test: (channel, fn) => ipcRenderer.on('up-to-date', channel),
 
         print: (callback) => ipcRenderer.on('printDocument', callback),
 
