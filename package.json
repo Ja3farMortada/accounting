@@ -1,6 +1,6 @@
 {
     "name": "accounting",
-    "version": "1.5.7",
+    "version": "1.5.8",
     "description": "Accounting POS App",
     "main": "main.js",
     "scripts": {
