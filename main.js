@@ -30,6 +30,8 @@ contextMenu({
     showCopyImage: false
 });
 
+const mysqldump = require('mysqldump')
+
 // Check if electron is in development mode to enable Node.js on release mode
 
 var node; //
