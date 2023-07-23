@@ -39,11 +39,10 @@ module.exports = (win, ipcMain) => {
         sendStatusToWindow('checking-for-update', 'Checking for update...');
     });
     autoUpdater.on('update-available', (info) => {
-        console.log('infoooo ' + info);
         sendStatusToWindow('update-available', info);
     });
     autoUpdater.on('update-not-available', (info) => {
-        console.log('infoo ' + info);
+        sendStatusToWindow('update-available', info);
     });
     autoUpdater.on('error', (err) => {
         sendStatusToWindow('error', err);
