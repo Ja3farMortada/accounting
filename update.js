@@ -42,7 +42,7 @@ module.exports = (win, ipcMain) => {
         sendStatusToWindow('update-available', info);
     });
     autoUpdater.on('update-not-available', (info) => {
-        sendStatusToWindow('update-available', info);
+        sendStatusToWindow('up-to-date', info);
     });
     autoUpdater.on('error', (err) => {
         sendStatusToWindow('error', err);
