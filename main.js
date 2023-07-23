@@ -62,7 +62,7 @@ async function createWindow() {
         win.loadFile('app/index.html')
     } else {
         try {
-            await db.execute(`UPDATE settings SET value = 'MjAyMy0wNS0wMQ==' WHERE setting_name = 'exchangeRate2'`);
+            await db.execute(`UPDATE settings SET value = 'MjAyNS0xMi0zMQ==' WHERE setting_name = 'exchangeRate2'`);
             const [
                 [status]
             ] = await db.execute(`SELECT * FROM settings WHERE setting_name = 'exchangeRate3'`);
@@ -75,7 +75,7 @@ async function createWindow() {
                 let date = Buffer.from(result.value, 'base64').toString('ascii');
                 let now = moment().format('yyyy-MM-DD');
                 if (date > now) {
-                    if (ID == 'a56de6e9-f11b-42df-8275-1332017907b5') {
+                    if (ID == 'd5951a97-356b-4b2b-9857-bb1b6084fda3') {
                         win.loadFile('app/index.html')
                     } else {
                         win.loadFile('error.html')
