@@ -9,6 +9,10 @@
             <a ng-class="{'active': selectedTab == 'lowStock'}" class="nav-link history-link"
                 ng-click="setTab('lowStock')"><i class="fas fa-arrow-trend-down fa-lg"></i> Low On Stock</a>
         </li>
+        <li class="nav-item">
+            <a ng-class="{'active': selectedTab == 'categories'}" class="nav-link history-link"
+                ng-click="setTab('categories')"><i class="fas fa-sitemap fa-lg"></i> Categories</a>
+        </li>
     </ul>
 
     <!-- ########################## Stock Tab #######################################  -->
@@ -269,6 +273,113 @@
                         </tr>
                     </tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- &&&&&&&&&&&&&&&&&&&&&&&&&& Categories Tab &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& -->
+    <div class="row mt-3" ng-show="selectedTab == 'categories'">
+        <div class="col-5">
+            <div class="card">
+                <div class="card-header">
+                    <button class="btn btn-success btn-sm float-start" ng-click="opencategoryModal('Add')"><i
+                            class="fas fa-plus"></i>
+                        Add Category</button>
+                    <h5 class="mb-0 text-center">Categories</h5>
+                </div>
+                <div class="card-body">
+
+                    <hr class="mb-0">
+
+                    <!-- table -->
+                    <table class="table table-bordereds text-center table-sm">
+                        <thead>
+                            <tr>
+                                <th width="10%">Sort</th>
+                                <th width="60%">Name</th>
+                                <th colspan="3" width="30%">Options</th>
+                            </tr>
+                        </thead>
+                        <tbody ng-sortable="sortOptions">
+                            <tr ng-class="{'table-success': selectedCategory.category_ID == data.category_ID}"
+                                ng-repeat="data in categories">
+                                <td class="grab-handle pointer"><i class="fas fa-grip-lines"></i></td>
+                                <td>{{ data.category_name }}</td>
+
+                                <td ng-click="selectCategory(data)" class="success-hover text-success"><i
+                                        class="fas fa-plus"></i></td>
+                                <td ng-click="opencategoryModal('Edit', data)" class="info-hover text-info"><i
+                                        class="fas fa-edit"></i></td>
+                                <td ng-click="deleteCategory(data)" class="danger-hover text-danger"><i
+                                        class="fas fa-trash-alt"></i></td>
+                            </tr>
+                            <tr class="table-active" ng-if="categories.length == 0">
+                                <td colspan="5">No Records Yet!</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- Items column -->
+        <div class="col-7">
+            <div ng-show="selectedCategory.category_name" class="card">
+                <div class="card-header">
+                    <button class="btn btn-success btn-sm float-start" ng-click="openItemsModal('Add')"><i
+                            class="fas fa-plus"></i>
+                        Add Item</button>
+                    <h5 class="mb-0 text-center">{{ selectedCategory.category_name }}</h5>
+                </div>
+                <div class="card-body">
+
+                    <hr class="mb-0">
+
+                    <table class="table table-striped text-center table-sm">
+                        <thead>
+                            <tr>
+                                <th width="25%">Barcode</th>
+                                <th width="35%">Name</th>
+                                <th width="20%">Price</th>
+                                <th width="20%" colspan="2">Options</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr dir-paginate="data in items | filter:searchVal:true:strict | itemsPerPage: 10"
+                                pagination-id="itemsTable">
+                                <td>{{ data.barcode || ' --- ' }}</td>
+                                <td>{{ data.item_description }}</td>
+
+                                <!-- <td ng-if="data.currency == 'lira'">{{ data.item_price.toLocaleString() }} L.L</td>
+                                <td ng-if="data.currency == 'dollar'">
+                                    {{ round(data.item_price * exchangeRate.rate_value).toLocaleString() }} L.L <span
+                                        class="text-success">({{ data.item_price.toLocaleString() }}$)</span>
+                                </td> -->
+                                <td ng-if="data.currency == 'euro'">
+                                    {{ (data.item_price * euroRate.rate_value).toLocaleString() }}$ <span
+                                        class="text-danger">({{ data.item_price.toLocaleString() }}€)</span>
+                                </td>
+                                <!-- dollar -->
+                                <td ng-if="data.currency == 'dollar'">
+                                    <!-- {{ round(data.item_price * exchangeRate.rate_value).toLocaleString() }} L.L -->
+                                    <span>{{ data.item_price.toLocaleString() }}$</span>
+                                </td>
+
+                                <td width="10%" ng-click="openItemsModal('edit', data)" class="info-hover text-info"><i
+                                        class="fas fa-edit"></i></td>
+                                <td ng-click="deleteItem(data)" class="danger-hover text-danger"><i
+                                        class="fas fa-trash-alt"></i></td>
+                            </tr>
+
+                            <tr ng-if="(items | filter: searchVal.category_ID_FK).length == 0 && items"
+                                class="table-active">
+                                <td colspan="5">No Items in Selected Category!</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <dir-pagination-controls pagination-id="itemsTable" max-size="5" direction-links="true"
+                        boundary-links="false" template-url="templates/dirPagination.tpl.html">
+                    </dir-pagination-controls>
+                </div>
             </div>
         </div>
     </div>

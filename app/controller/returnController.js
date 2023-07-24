@@ -82,7 +82,7 @@ app.controller('returnController', function ($scope, returnFactory, customersFac
     let customerModalType;
     $scope.openCustomerModal = type => {
         customerModalType = type;
-        $scope.selectedCustomerID = null;
+        // returnFactory.selectedCustomer.next(null);
         customersModal.show();
         $('#customersModal').on('shown.bs.modal', () => {
             // use dselect library to enable live search within select
@@ -117,7 +117,7 @@ app.controller('returnController', function ($scope, returnFactory, customersFac
     })
     $scope.openArchiveOffcanvas = () => {
         archiveOffcanvas.show();
-        returnFactory.getRecentItems($scope.selectedCustomerID);
+        returnFactory.getRecentItems($scope.selectedCustomer.customer_ID);
     }
 
     // add selected record to return invoice

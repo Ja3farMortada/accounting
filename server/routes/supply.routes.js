@@ -19,7 +19,7 @@ module.exports = (app, db) => {
     
                 let totalDebts = items.reduce((memo, item) => {
                     return {
-                        total: (item.qty * item.item_cost)
+                        total: memo.total + (item.qty * item.item_cost)
                     }
                 }, {
                     total: 0

@@ -91,11 +91,12 @@ module.exports = (app, db) => {
 
             let totalDebts = items.reduce((memo, item) => {
                 return {
-                    totalDollar: (item.qty * item.unit_price)
+                    totalDollar: memo.totalDollar + (item.qty * item.unit_price)
                 }
             }, {
                 totalDollar: 0
             });
+
             let customer_ID = invoice.customer_ID_FK;
             let debtQuery = `UPDATE customers SET dollar_debt = (dollar_debt + ${totalDebts.totalDollar}) WHERE customer_ID = ?`;
             await connection.query(debtQuery, customer_ID);
