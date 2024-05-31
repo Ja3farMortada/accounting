@@ -71,8 +71,10 @@ module.exports = (app, db) => {
             break;
         }
 
-        let query = `UPDATE customers SET dollar_debt = (dollar_debt ${operation} ${invoice.total_price}) WHERE customer_ID = ?`;
-        await connection.query(query, invoice.customer_ID);
+        if (invoice.customer_ID) {
+          let query = `UPDATE customers SET dollar_debt = (dollar_debt ${operation} ${invoice.total_price}) WHERE customer_ID = ?`;
+          await connection.query(query, invoice.customer_ID);
+        }
       }
       await connection.commit();
       connection.release();

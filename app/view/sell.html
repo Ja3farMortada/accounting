@@ -90,7 +90,9 @@
                                 <td class="p-1">{{ data.discounted_price.toLocaleString() }}$</td>
 
                                 <!-- qty input -->
-                                <td class="p-1">{{ data.qty }}</td>
+                                <td class="p-1">
+                                    <input id="input{{$index}}" type="number" class="text-center form-control form-control-sm" ng-model="data.qty" ng-focus="selectQuantity($index)" min="1" required>
+                                </td>
 
                                 <!-- total -->
                                 <td class="p-1">

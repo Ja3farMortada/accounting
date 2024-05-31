@@ -149,7 +149,7 @@ app.controller(
       "invoice",
       function () {
         calculateTotal();
-        $scope.triggerFocus();
+        // $scope.triggerFocus();
       },
       true
     );
@@ -364,6 +364,11 @@ app.controller(
     // add Qty
     $scope.addQty = index => {
       $scope.invoice[index].qty += 1;
+    };
+
+    // select quantity input on focus
+    $scope.selectQuantity = function (index) {
+      $("#input" + index).trigger("select");
     };
 
     // clear invoice
