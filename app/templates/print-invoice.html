@@ -1,110 +1,134 @@
 <!DOCTYPE html>
 <html lang="en" dir="rtl">
-
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Print</title>
 
-    <link rel="stylesheet" href="../../node_modules/@fortawesome/fontawesome-free/css/all.min.css">
-    <link rel="stylesheet" href="../../node_modules/bootstrap/dist/css/bootstrap.rtl.min.css">
+    <link
+      rel="stylesheet"
+      href="../../node_modules/@fortawesome/fontawesome-free/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="../../node_modules/bootstrap/dist/css/bootstrap.rtl.min.css"
+    />
 
     <script src="../../node_modules/angular/angular.min.js"></script>
 
     <style>
-        .bordered {
-            border: 2px solid #000000 !important;
-        }
+      .bordered {
+        border: 2px solid #000000 !important;
+      }
+      table > tbody > tr > td {
+        padding: 0 !important;
+      }
     </style>
-</head>
+  </head>
 
-<body ng-app="printApp" ng-controller="printController">
+  <body ng-app="printApp" ng-controller="printController">
     <div class="container-fluid">
+      <!-- logo and info -->
+      <div class="row">
+        <div class="col-5 mx-auto text-centers">
+          <img src="../assets/images/safi-logo.png" height="190px" />
+        </div>
+      </div>
 
-        <!-- logo and info -->
-        <div class="row">
-            <div class="col-5 mx-auto text-centers">
-                <img src="../assets/images/safi-logo.png" height="190px">
-            </div>
+      <div class="row d-flex justify-content-between mt-3">
+        <div class="col-4">
+          <h5 style="font-family: Courier New">طريق عام حاريص - تبنين</h5>
+          <h5 style="font-family: Courier New">03/561936</h5>
+          <h5 style="font-family: Courier New">
+            81/777604 <i class="fab fa-whatsapp fa-lg"></i>
+          </h5>
         </div>
 
-        <div class="row d-flex justify-content-between mt-3">
-            <div class="col-4">
-                <h5 style="font-family: Courier New">طريق عام حاريص - تبنين</h5>
-                <h5 style="font-family: Courier New">03/561936</h5>
-                <h5 style="font-family: Courier New">81/777604 <i class="fab fa-whatsapp fa-lg"></i></h5>
-            </div>
-
-            <div class="col-4 text-center">
-                <h3>{{ printData.type }}</h3>
-            </div>
-
-            <div class="col-4">
-                <table class="table table-bordered text-center table-sm">
-                    <thead>
-                        <tr class="bg-secondary">
-                            <th width="40%" class="bordered">#</th>
-                            <th class="bordered">التاريخ</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="bordered">{{ printData.invoice_ID || '---' }}</td>
-                            <td class="bordered">{{ printData.date }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+        <div class="col-4 text-center">
+          <h3>{{ printData.type }}</h3>
         </div>
 
-        <br>
-
-        <h5>الاسم: {{printData.name}} <span ng-if="!printData.name">..............................</span></h5>
-        <!-- table -->
-        <table class="table table-bordered table-sm text-center table-striped mt-4">
+        <div class="col-4">
+          <table class="table table-bordered text-center table-sm">
             <thead>
-                <tr>
-                    <th width="15%">الكود</th>
-                    <th width="40%">الإسم</th>
-                    <th width="10%">الحسم</th>
-                    <th width="15%">السعر الإفرادي</th>
-                    <th width="5%">العدد</th>
-                    <th width="15%">السعر الإجمالي</th>
-                </tr>
+              <tr class="bg-secondary">
+                <th width="40%" class="bordered">#</th>
+                <th class="bordered">التاريخ</th>
+              </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="data in invoice">
-                    <td>{{ data.barcode }}</td>
-                    <td>{{ data.item_description }}</td>
-                    <td>{{ data.discount }}%</td>
-                    <td>{{ data.discounted_price.toLocaleString() }}$</td>
-                    <td>{{ data.qty }}</td>
-                    <td>{{ (data.discounted_price * data.qty).toLocaleString() }}$</td>
-                </tr>
+              <tr>
+                <td class="bordered">{{ printData.invoice_ID || '---' }}</td>
+                <td class="bordered">{{ printData.date }}</td>
+              </tr>
             </tbody>
-        </table>
-        <h5>Total: {{ $scope.invoice.total }}</h5>
+          </table>
+        </div>
+      </div>
+
+      <br />
+
+      <h5>
+        الاسم: {{printData.name}}
+        <span ng-if="!printData.name">..............................</span>
+      </h5>
+      <!-- table -->
+      <table
+        class="table table-bordered table-sm text-center table-striped mt-4"
+      >
+        <thead>
+          <tr>
+            <th width="15%">التصنيف</th>
+            <th width="40%">الإسم</th>
+            <th width="10%">الحسم</th>
+            <th width="15%">السعر الإفرادي</th>
+            <th width="5%">العدد</th>
+            <th width="15%">السعر الإجمالي</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="data in invoice">
+            <td>{{ data.category_name }}</td>
+            <td>{{ data.item_description }}</td>
+            <td>{{ data.discount }}%</td>
+            <td>{{ data.discounted_price.toLocaleString() }}$</td>
+            <td>{{ data.qty }}</td>
+            <td>{{ (data.discounted_price * data.qty).toLocaleString() }}$</td>
+          </tr>
+        </tbody>
+      </table>
+      <h5 class="text-end">المجموع: {{ printData.total | currency }}</h5>
     </div>
-</body>
+  </body>
 
-<script>
-    const app = angular.module('printApp', []);
-    app.controller('printController', function ($scope) {
+  <script>
+    const app = angular.module("printApp", []);
+    app.controller("printController", function ($scope) {
+      window.electron.print((event, data) => {
+        console.log(data);
+        $scope.$digest(($scope.printData = data));
+        $scope.$digest(($scope.invoice = data.invoice));
+      });
 
-        window.electron.print((event, data) => {
-            console.log(data);
-            $scope.$digest($scope.printData = data)
-            $scope.$digest($scope.invoice = data.invoice);
-        })
-
-        function getDate() {
-            var d = new Date();
-            months = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
-            return d.getDate() + '-' + months[d.getMonth()] + '-' + d.getFullYear();
-        };
-
+      function getDate() {
+        var d = new Date();
+        months = [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10",
+          "11",
+          "12",
+        ];
+        return d.getDate() + "-" + months[d.getMonth()] + "-" + d.getFullYear();
+      }
     });
-</script>
-
+  </script>
 </html>
